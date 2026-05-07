@@ -81,11 +81,6 @@
 			}
 		}
 	],
-	"defaultChatAgent": {
-		"extensionId": "flexpilot.flexpilot",
-		"providerId": "github",
-		"documentationUrl": "https://flexpilot.ai/installation"
-	},
 	"linkProtectionTrustedDomains": [
 		"https://*.visualstudio.com",
 		"https://*.microsoft.com",
@@ -104,13 +99,9 @@
 		"https://*.flexpilot.ai"
 	],
 	"trustedExtensionAuthAccess": {
-		"github": [
-			"flexpilot.flexpilot"
-		]
 	},
 	"trustedExtensionProtocolHandlers": [
 		"vscode.git",
-		"vscode.github-authentication",
 		"vscode.microsoft-authentication"
 	],
 	"extensionsGallery": {

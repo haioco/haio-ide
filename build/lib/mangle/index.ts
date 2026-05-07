@@ -322,7 +322,6 @@ const skippedExportMangledProjects = [
 	'configuration-editing',
 	'microsoft-authentication',
 	'flexpilot',
-	'github-authentication',
 	'html-language-features/server',
 ];
 

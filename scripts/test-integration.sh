@@ -71,7 +71,7 @@ npm run test-extension -- -l vscode-colorize-tests
 kill_app
 
 echo
-echo "### Terminal Suggest tests" 
+echo "### Terminal Suggest tests"
 echo
 npm run test-extension -- -l terminal-suggest --enable-proposed-api=vscode.vscode-api-tests
 kill_app
@@ -116,12 +116,6 @@ echo
 echo "### Configuration editing tests"
 echo
 npm run test-extension -- -l configuration-editing
-kill_app
-
-echo
-echo "### GitHub Authentication tests"
-echo
-npm run test-extension -- -l github-authentication
 kill_app
 
 # Tests standalone (CommonJS)
