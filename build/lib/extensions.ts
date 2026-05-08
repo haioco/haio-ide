@@ -292,7 +292,7 @@ const excludedExtensions = [
 	'vscode-test-resolver',
 	'ms-vscode.node-debug',
 	'ms-vscode.node-debug2',
-	'github-authentication',
+	'github-authentication', // excluded to remove forced GitHub sign-in
 ];
 
 const marketplaceWebExtensionsExclude = new Set([
