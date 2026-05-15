@@ -312,8 +312,8 @@
       },
       {
         "view": "workbench.panel.chat.view.copilot",
-        "contents": "Connect your GitHub Account to use Flexpilot, your AI pair programmer.\n\nThis is just required to personalize the IDE with your GitHub profile and auto-configure GitHub models for free to use instantly.\n\n[Connet your GitHub Account](command:flexpilot.github.signin)",
-        "when": "flexpilot:isLoaded && flexpilot:isNetworkConnected && !flexpilot:isLoggedIn"
+        "contents": "Configure your AI model provider to start using Flexpilot.\n\n[Configure Model Provider](command:flexpilot.configureModel)",
+        "when": "flexpilot:isLoaded && flexpilot:isNetworkConnected"
       },
       {
         "view": "workbench.panel.chat.view.edits",
@@ -327,8 +327,8 @@
       },
       {
         "view": "workbench.panel.chat.view.edits",
-        "contents": "Connect your GitHub Account to use Flexpilot, your AI pair programmer.\n\nThis is just required to personalize the IDE with your GitHub profile and auto-configure GitHub models for free to use instantly.\n\n[Connet your GitHub Account](command:flexpilot.github.signin)",
-        "when": "flexpilot:isLoaded && flexpilot:isNetworkConnected && !flexpilot:isLoggedIn"
+        "contents": "Configure your AI model provider to start using Flexpilot.\n\n[Configure Model Provider](command:flexpilot.configureModel)",
+        "when": "flexpilot:isLoaded && flexpilot:isNetworkConnected"
       }
     ],
     "commands": [
@@ -361,14 +361,12 @@
       {
         "command": "flexpilot.configureModel",
         "title": "Configure the Language Model Provider",
-        "category": "Flexpilot",
-        "enablement": "flexpilot:isLoggedIn"
+        "category": "Flexpilot"
       },
       {
         "command": "flexpilot.usagePreferences",
         "title": "Set Model Usage Preferences",
-        "category": "Flexpilot",
-        "enablement": "flexpilot:isLoggedIn"
+        "category": "Flexpilot"
       },
       {
         "command": "flexpilot.viewLogs",

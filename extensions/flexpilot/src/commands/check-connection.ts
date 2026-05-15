@@ -5,15 +5,15 @@
 
 import * as vscode from 'vscode';
 import { logger } from '../logger';
-import { registerDisposable, globalState, modelConfigs, usagePreferences, clearGlobalState } from '../context';
+import { registerDisposable, globalState, modelConfigs, usagePreferences } from '../context';
 import { modelProviderManager } from '../providers';
 import { corsEnableUrl, getGitHubSession, setContext, showSupportNotification, triggerUserSupport } from '../utilities';
-import { register as panelChatRegister, dispose as panelChatDispose } from '../interfaces/panel-chat';
-import { register as inlineChatRegister, dispose as inlineChatDispose } from '../interfaces/inline-chat';
-import { register as renameSymbolRegister, dispose as renameSymbolDispose } from '../interfaces/rename-symbol';
-import { register as editingSessionRegister, dispose as editingSessionDispose } from '../interfaces/editing-session';
-import { register as terminalChatRegister, dispose as terminalChatDispose } from '../interfaces/terminal-chat';
-import { register as completionsRegister, dispose as completionsDispose } from '../interfaces/inline-completion';
+import { register as panelChatRegister } from '../interfaces/panel-chat';
+import { register as inlineChatRegister } from '../interfaces/inline-chat';
+import { register as renameSymbolRegister } from '../interfaces/rename-symbol';
+import { register as editingSessionRegister } from '../interfaces/editing-session';
+import { register as terminalChatRegister } from '../interfaces/terminal-chat';
+import { register as completionsRegister } from '../interfaces/inline-completion';
 import { GenericChatModelProvider, IGenericChatModelConfig } from '../providers/generic';
 import { DEFAULT_MODEL_PARAMS, LOCATIONS } from '../constants';
 import { IGitHubCopilotModel } from '../types';
@@ -124,14 +124,14 @@ const checkInternetConnection = async () => {
  * Handles the internet connection check for the Flexpilot extension.
  */
 const handler = async () => {
-	// Get the GitHub session when there's an active network connection
+	// Get the GitHub session (optional now)
 	const githubSession = await getGitHubSession();
 
-	// Set the logged-in status based on the session
-	await setContext('isLoggedIn', !!githubSession);
+	// Set the logged-in status to true by default (no longer requires GitHub)
+	await setContext('isLoggedIn', true);
 
-	if (githubSession && !isAgentsActivated) {
-		// Set the flag to true when there's an active session
+	if (!isAgentsActivated) {
+		// Set the flag to true
 		isAgentsActivated = true;
 
 		await vscode.window.withProgress({
@@ -158,20 +158,21 @@ const handler = async () => {
 				return;
 			}
 
-			// Register the session features when there's an active session
-			if (globalState.get('github.support')) {
-				triggerUserSupport(githubSession);
-			} else {
-				showSupportNotification(githubSession);
+			// Register GitHub models only if there's an active session (optional)
+			if (githubSession) {
+				if (globalState.get('github.support')) {
+					triggerUserSupport(githubSession);
+				} else {
+					showSupportNotification(githubSession);
+				}
+
+				progress.report({ message: 'Registering Copilot models' });
+				await registerGithubCopilotModels(githubSession);
+				progress.report({ message: 'Registering GitHub models' });
+				await registerGitHubModels(githubSession);
 			}
 
-			// Register the GitHub models
-			progress.report({ message: 'Registering Copilot models' });
-			await registerGithubCopilotModels(githubSession);
-			progress.report({ message: 'Registering GitHub models' });
-			await registerGitHubModels(githubSession);
-
-			// Register the chat panels when there's an active session
+			// Register the chat panels
 			progress.report({ message: 'Registering Chat Participants' });
 			await modelProviderManager.initialize();
 			await completionsRegister();
@@ -181,33 +182,6 @@ const handler = async () => {
 			await editingSessionRegister();
 			await terminalChatRegister();
 		});
-	} else if (!githubSession && isAgentsActivated) {
-		// Set the flag to false when there's no active session
-		isAgentsActivated = false;
-
-		// Dispose the chat panels when there's no active session
-		await modelProviderManager.disposeAll();
-		await completionsDispose();
-		await panelChatDispose();
-		await inlineChatDispose();
-		await renameSymbolDispose();
-		await editingSessionDispose();
-		await terminalChatDispose();
-
-		// Clear the global state when there's no active session
-		await clearGlobalState();
-
-		// Show a sign-in prompt when there's no active session
-		vscode.window
-			.showInformationMessage(
-				'Please sign in to your GitHub account to start using Flexpilot',
-				'Sign in to Chat',
-			)
-			.then((selection) => {
-				if (selection === 'Sign in to Chat') {
-					vscode.commands.executeCommand('flexpilot.github.signin');
-				}
-			});
 	}
 };
 

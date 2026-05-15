@@ -24,7 +24,7 @@ import { registerShowDiagnosticsCommand } from './commands/show-diagnostics';
 export async function activate(context: vscode.ExtensionContext) {
 	await setContext('isLoaded', false);
 	await setContext('isNetworkConnected', true);
-	await setContext('isLoggedIn', false);
+	await setContext('isLoggedIn', true);
 
 	// Check for updates when the extension is activated
 	checkUpdateAvailable();
