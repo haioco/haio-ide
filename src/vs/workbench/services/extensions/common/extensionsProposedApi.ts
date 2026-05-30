@@ -54,8 +54,8 @@ export class ExtensionsProposedApi {
 			}
 		}
 
-		// Make sure that flexpilot is always enabled
-		this._productEnabledExtensions.set('flexpilot.flexpilot', Object.keys(allApiProposals));
+		// Make sure that zynk is always enabled
+		this._productEnabledExtensions.set('zynk.zynk', Object.keys(allApiProposals));
 	}
 
 	updateEnabledApiProposals(extensions: IExtensionDescription[]): void {

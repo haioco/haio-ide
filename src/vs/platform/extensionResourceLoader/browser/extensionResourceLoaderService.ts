@@ -16,16 +16,10 @@ import { AbstractExtensionResourceLoaderService, IExtensionResourceLoaderService
 import { isWeb } from '../../../base/common/platform.js';
 
 /**
- * Modifies the given URL to route through a CORS proxy.
+ * Returns the URL as-is (no CORS proxy needed for direct API access).
  */
 export const corsEnableUrl = (url: string) => {
-	if (!isWeb) { return URI.parse(url); }
-	const baseUrlObject = new URL(url);
-	baseUrlObject.protocol = 'https:';
-	baseUrlObject.port = '';
-	baseUrlObject.pathname = '/' + baseUrlObject.hostname + baseUrlObject.pathname;
-	baseUrlObject.hostname = 'cors-proxy.flexpilot.ai';
-	return URI.parse(baseUrlObject.toString());
+	return URI.parse(url);
 };
 
 class ExtensionResourceLoaderService extends AbstractExtensionResourceLoaderService {
@@ -57,11 +51,6 @@ class ExtensionResourceLoaderService extends AbstractExtensionResourceLoaderServ
 			requestInit.mode = 'cors'; /* set mode to cors so that above headers are always passed */
 		}
 
-		const requestUrl = new URL(uri.toString(true));
-		const CORS_SKIP_HOSTS = ['localhost', 'ide.flexpilot.ai', 'cors-proxy.flexpilot.ai'];
-		if (!CORS_SKIP_HOSTS.includes(requestUrl.hostname)) {
-			uri = corsEnableUrl(uri.toString(true));
-		}
 
 		const response = await fetch(uri.toString(true), requestInit);
 		if (response.status !== 200) {
