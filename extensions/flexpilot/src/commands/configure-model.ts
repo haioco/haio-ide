@@ -59,7 +59,7 @@ const addNewConfiguration = async (): Promise<void> => {
 		}), {
 		placeHolder: 'Select a chat model provider',
 		ignoreFocusOut: true,
-		title: 'Flexpilot: Select the chat model provider',
+		title: 'Zynk: Select the chat model provider',
 	}
 	);
 	if (!provider) { return; }
@@ -89,7 +89,7 @@ const deleteConfirmationDialog = async (configId: string): Promise<void> => {
 
 	// Show the input box to confirm the deletion of the configuration
 	const confirmNickname = await vscode.window.showInputBox({
-		title: 'Flexpilot: Delete language model provider',
+		title: 'Zynk: Delete language model provider',
 		ignoreFocusOut: true,
 		prompt: 'Enter nickname here to confirm',
 		validateInput(value) {
@@ -121,7 +121,7 @@ const completionsConfiguration = async (): Promise<void> => {
 			type: 'info',
 			message: 'Completions Configuration',
 			detail: 'NOTE: Only OpenAI compatabile LLM providers are supported',
-			custom: { dialogId: 'flexpilot-model-config' },
+			custom: { dialogId: 'zynk-model-config' },
 			inputs: [
 				{
 					placeholder: 'e.g., https://codestral.mistral.ai/v1/fim',
@@ -163,7 +163,7 @@ const completionsConfiguration = async (): Promise<void> => {
 		};
 
 		const response = await vscode.commands.executeCommand<ICustomDialogOutputResult>(
-			'flexpilot.custom.dialog.show', dialogOptions);
+			'zynk.custom.dialog.show', dialogOptions);
 
 		if (!response.values || !response.confirmed) {
 			return;
@@ -198,7 +198,7 @@ const completionsConfiguration = async (): Promise<void> => {
 		await vscode.window.withProgress(
 			{
 				location: vscode.ProgressLocation.Notification,
-				title: 'Flexpilot',
+				title: 'Zynk',
 				cancellable: true,
 			},
 			async (progress) => {
@@ -238,7 +238,7 @@ const completionsConfiguration = async (): Promise<void> => {
 };
 
 /**
- * Handles the configuration process for the Flexpilot extension.
+ * Handles the configuration process for the Zynk extension.
  */
 const handler = async () => {
 	const quickPickItems: IQuickPickItem[] = [
@@ -307,7 +307,7 @@ const handler = async () => {
 	// Create a quick pick to select the model provider
 	const quickPick = vscode.window.createQuickPick<IQuickPickItem>();
 	quickPick.items = quickPickItems;
-	quickPick.title = 'Flexpilot: Configure the Language Model Provider';
+	quickPick.title = 'Zynk: Configure the Language Model Provider';
 	quickPick.ignoreFocusOut = true;
 	quickPick.canSelectMany = false;
 	quickPick.placeholder = 'Select or Edit a language model provider';
@@ -330,7 +330,7 @@ const handler = async () => {
 		} else if (selection[0].label === 'Edit Completions Config') {
 			completionsConfiguration();
 		} else if (selection[0].label === 'Edit Usage Preferences') {
-			vscode.commands.executeCommand('flexpilot.usagePreferences');
+			vscode.commands.executeCommand('zynk.usagePreferences');
 		} else {
 			editConfiguration(selection[0]);
 		}
@@ -344,9 +344,9 @@ const handler = async () => {
 };
 
 /**
- * Registers the 'flexpilot.configureModel' command with the Visual Studio Code extension context.
+ * Registers the 'zynk.configureModel' command with the Visual Studio Code extension context.
  */
 export const registerConfigureModelCommand = () => {
-	registerDisposable(vscode.commands.registerCommand('flexpilot.configureModel', handler));
-	logger.info('Command `flexpilot.configureModel` registered');
+	registerDisposable(vscode.commands.registerCommand('zynk.configureModel', handler));
+	logger.info('Command `zynk.configureModel` registered');
 };

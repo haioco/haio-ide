@@ -18,7 +18,7 @@ const chatRequestHandler: vscode.ChatExtendedRequestHandler = async (request, co
 		logger.debug('Request messages for terminal chat: \n\n' + JSON.stringify(messages, null, 2));
 
 		// Check if the user has requested token usage
-		const returnTokenUsage = vscode.workspace.getConfiguration().get<boolean>('flexpilot.terminal.showTokenUsage');
+		const returnTokenUsage = vscode.workspace.getConfiguration().get<boolean>('zynk.terminal.showTokenUsage');
 
 		// Generate the chat response
 		const { text } = await request.model.sendRequest(messages, { modelOptions: { returnTokenUsage } }, token);
@@ -41,7 +41,7 @@ const chatRequestHandler: vscode.ChatExtendedRequestHandler = async (request, co
 	} catch (error) {
 		// Log and return error details if any
 		logger.error(error as Error);
-		response.button({ command: 'flexpilot.viewLogs', title: 'View Logs' });
+		response.button({ command: 'zynk.viewLogs', title: 'View Logs' });
 		return {
 			metadata: { response: 'Unable to process request', request: request.prompt },
 			errorDetails: { message: 'Error processing request' },
@@ -59,13 +59,13 @@ export const register = async () => {
 	if (chatParticipant) { await chatParticipant.dispose(); }
 
 	// Create the chat participant
-	chatParticipant = vscode.chat.createChatParticipant('flexpilot.terminal.session', chatRequestHandler);
+	chatParticipant = vscode.chat.createChatParticipant('zynk.terminal.session', chatRequestHandler);
 
 	// Set up welcome message provider
 	chatParticipant.welcomeMessageProvider = {
 		provideWelcomeMessage: async () => {
-			const message = new vscode.MarkdownString('Welcome to the Flexpilot AI terminal chat!');
-			return { icon: new vscode.ThemeIcon('terminal'), title: 'Ask Flexpilot', message };
+			const message = new vscode.MarkdownString('Welcome to the Zynk terminal chat!');
+			return { icon: new vscode.ThemeIcon('terminal'), title: 'Ask Zynk', message };
 		}
 	};
 

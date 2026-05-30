@@ -41,7 +41,7 @@ export class OpenAIChatModelProvider extends IChatModelProvider {
 			primaryButton: 'Save',
 			type: 'info',
 			message: 'Model Configuration',
-			custom: { dialogId: 'flexpilot-model-config' },
+			custom: { dialogId: 'zynk-model-config' },
 			checkbox: {
 				label: 'Supports tool calling',
 				checked: !!config?.supportsToolCalls,
@@ -87,7 +87,7 @@ export class OpenAIChatModelProvider extends IChatModelProvider {
 		};
 
 		const response = await vscode.commands.executeCommand<ICustomDialogOutputResult>(
-			'flexpilot.custom.dialog.show', dialogOptions
+			'zynk.custom.dialog.show', dialogOptions
 		);
 		if (!response.values || !response.confirmed) {
 			// If the dialog was cancelled or closed, return false
@@ -116,7 +116,7 @@ export class OpenAIChatModelProvider extends IChatModelProvider {
 		await vscode.window.withProgress(
 			{
 				location: vscode.ProgressLocation.Notification,
-				title: 'Flexpilot',
+				title: 'Zynk',
 				cancellable: true,
 			},
 			async (progress, token) => {

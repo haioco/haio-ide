@@ -234,7 +234,7 @@ class ChatSlashStaticSlashCommandsContribution extends Disposable {
 			locations: [ChatAgentLocation.Panel]
 		}, async (prompt, progress) => {
 			progress.report({ content: new MarkdownString('🎉 Model settings opened successfully'), kind: 'markdownContent' });
-			commandService.executeCommand('flexpilot.configureModel');
+			commandService.executeCommand('zynk.configureModel');
 		}));
 		this._store.add(slashCommandService.registerSlashCommand({
 			command: 'clear',

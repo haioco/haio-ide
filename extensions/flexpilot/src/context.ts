@@ -7,7 +7,7 @@ import * as vscode from 'vscode';
 import { LOCATIONS } from './constants';
 import { ICompletionsConfig, IModelConfig } from './types';
 
-// The extension context for the Flexpilot extension
+// The extension context for the Zynk extension
 let extensionContext: vscode.ExtensionContext;
 
 /**
@@ -56,14 +56,14 @@ export const modelConfigs = {
 	 * Retrieves a value from permanent storage.
 	 */
 	get: <T1 extends IModelConfig>(key: string): T1 | undefined => {
-		return getExtensionContext().globalState.get<T1>(`flexpilot.modelProvider.${key}`);
+		return getExtensionContext().globalState.get<T1>(`zynk.modelProvider.${key}`);
 	},
 
 	/**
 	 * Sets a value in permanent storage.
 	 */
 	update: async <T1 extends IModelConfig>(key: string, value: T1 | undefined): Promise<void> => {
-		return getExtensionContext().globalState.update(`flexpilot.modelProvider.${key}`, value);
+		return getExtensionContext().globalState.update(`zynk.modelProvider.${key}`, value);
 	},
 
 	/**
@@ -72,8 +72,8 @@ export const modelConfigs = {
 	list: (): string[] => {
 		const result: string[] = [];
 		for (const item of getExtensionContext().globalState.keys()) {
-			if (item.startsWith('flexpilot.modelProvider')) {
-				result.push(item.replace('flexpilot.modelProvider.', ''));
+			if (item.startsWith('zynk.modelProvider')) {
+				result.push(item.replace('zynk.modelProvider.', ''));
 			}
 		}
 		return result;

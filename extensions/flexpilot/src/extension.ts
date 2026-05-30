@@ -6,9 +6,8 @@
 import * as vscode from 'vscode';
 import { logger } from './logger';
 import { registerDisposable, setExtensionContext } from './context';
-import { checkUpdateAvailable, setContext } from './utilities';
+import { setContext } from './utilities';
 import { registerCheckInternetConnectionCommand } from './commands/check-connection';
-import { handleGitHubFileSystemProvider } from './fs-provider';
 import { registerVfsInfoMessageCommand } from './commands/vfs-info-message';
 import { registerEditorVariable, registerSelectionVariable, registerTerminalLastCommandVariable, registerTerminalSelectionVariable } from './variables';
 import { registerGithubSignInCommand } from './commands/github-sign-in';
@@ -25,9 +24,6 @@ export async function activate(context: vscode.ExtensionContext) {
 	await setContext('isLoaded', false);
 	await setContext('isNetworkConnected', true);
 	await setContext('isLoggedIn', true);
-
-	// Check for updates when the extension is activated
-	checkUpdateAvailable();
 
 	// set the extension context to the global context
 	setExtensionContext(context);
@@ -53,20 +49,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	registerTerminalSelectionVariable();
 
 	// Check the internet connection and activate
-	vscode.commands.executeCommand('flexpilot.checkInternetConnection');
-
-	// Check if the workspace is a GitHub workspace
-	const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
-	if (
-		process.platform === 'web' &&
-		workspaceFolder &&
-		workspaceFolder.uri.scheme === 'web-fs' &&
-		workspaceFolder.uri.authority === 'github'
-	) {
-		// Handle the GitHub file system provider
-		logger.info('Handling GitHub file system provider');
-		await handleGitHubFileSystemProvider(workspaceFolder.uri);
-	}
+	vscode.commands.executeCommand('zynk.checkInternetConnection');
 
 	// Show the chat panel
 	vscode.commands.executeCommand('workbench.action.chat.open');

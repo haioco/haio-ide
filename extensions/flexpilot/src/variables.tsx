@@ -18,7 +18,7 @@ let lastTerminalExecutedCommand: vscode.TerminalExecutedCommand | undefined;
 export const registerEditorVariable = () => {
 	registerDisposable(
 		vscode.chat.registerChatVariableResolver(
-			'flexpilot.editor',
+			'zynk.editor',
 			'editor',
 			'The visible source code in the active editor',
 			undefined,
@@ -91,7 +91,7 @@ export const registerEditorVariable = () => {
 export const registerSelectionVariable = () => {
 	registerDisposable(
 		vscode.chat.registerChatVariableResolver(
-			'flexpilot.selection',
+			'zynk.selection',
 			'selection',
 			'The current selection in the active editor',
 			undefined,
@@ -187,7 +187,7 @@ export const registerTerminalLastCommandVariable = () => {
 	// register the chat variable resolver for terminal last command
 	registerDisposable(
 		vscode.chat.registerChatVariableResolver(
-			'flexpilot.terminalLastCommand',
+			'zynk.terminalLastCommand',
 			'terminalLastCommand',
 			'The last command executed in the terminal',
 			undefined,
@@ -276,7 +276,7 @@ export const registerTerminalLastCommandVariable = () => {
 export const registerTerminalSelectionVariable = () => {
 	registerDisposable(
 		vscode.chat.registerChatVariableResolver(
-			'flexpilot.terminalSelection',
+			'zynk.terminalSelection',
 			'terminalSelection',
 			'The selected text from terminal',
 			undefined,
@@ -563,7 +563,7 @@ export const resolveVariablesToCoreMessages = async (
 			const location = reference.value as vscode.Location;
 			messages.push(await resolveCodeSymbol(location, reference.name));
 		} else if (
-			reference.id.startsWith('flexpilot.') &&
+			reference.id.startsWith('zynk.') &&
 			typeof reference.value === 'string'
 		) {
 			response.reference2({ variableName: reference.name });

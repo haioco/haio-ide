@@ -5,12 +5,10 @@
 
 import * as vscode from 'vscode';
 import { ILanguageConfig } from './types';
-import { logger } from './logger';
-import { globalState } from './context';
 import { LANGUAGES } from './constants';
 
 /**
- * Retrieves or creates a GitHub authentication session.
+ * Retrieves or creates a GitHub authentication session (optional, used only if available).
  */
 export const getGitHubSession = async (options?: { createIfNone: boolean }): Promise<vscode.AuthenticationSession | undefined> => {
 	const session = await vscode.authentication.getSession(
@@ -22,27 +20,10 @@ export const getGitHubSession = async (options?: { createIfNone: boolean }): Pro
 };
 
 /**
- * Check if there is an update available for the IDE
- */
-export const checkUpdateAvailable = async () => {
-	try {
-		if (process.platform === 'web') { return; }
-		const response = await fetch('https://github.com/flexpilot-ai/flexpilot-ide/releases/latest');
-		const urlSplits = response.url.split('/');
-		if (urlSplits.at(-2) === 'tag' && urlSplits.at(-1) !== vscode.version) {
-			logger.notifyInfo('New version of Flexpilot IDE is available. Please update to the latest version for the best experience.');
-			logger.info(`Current version: ${vscode.version}, Latest version: ${urlSplits.at(-1)}`);
-		}
-	} catch (error) {
-		logger.warn(`Unable to check for updates: ${error}`);
-	}
-};
-
-/**
  * Retrieves the Token Usage from the given chunk.
  */
 export const parseTokenUsage = (chunk: string): string | undefined => {
-	const tokenUsage = chunk.match(/<flexpilot-llm-token-usage>([^]*?)<\/flexpilot-llm-token-usage>/);
+	const tokenUsage = chunk.match(/<zynk-llm-token-usage>([^]*?)<\/zynk-llm-token-usage>/);
 	if (tokenUsage) {
 		const tokenUsageJson = JSON.parse(tokenUsage[1].trim());
 		return [
@@ -57,20 +38,14 @@ export const parseTokenUsage = (chunk: string): string | undefined => {
  * Sets a context key with a specified boolean value in the Visual Studio Code environment.
  */
 export const setContext = async (key: string, value: boolean) => {
-	await vscode.commands.executeCommand('setContext', `flexpilot:${key}`, value);
+	await vscode.commands.executeCommand('setContext', `zynk:${key}`, value);
 };
 
 /**
- * Modifies the given URL to route through a CORS proxy.
+ * Returns the URL unchanged (no CORS proxy needed for direct API access).
  */
 export const corsEnableUrl = (url: string) => {
-	if (process.platform !== 'web') { return url; }
-	const baseUrlObject = new URL(url);
-	baseUrlObject.protocol = 'https:';
-	baseUrlObject.port = '';
-	baseUrlObject.pathname = '/' + baseUrlObject.hostname + baseUrlObject.pathname;
-	baseUrlObject.hostname = 'cors-proxy.flexpilot.ai';
-	return baseUrlObject.toString();
+	return url;
 };
 
 /**
@@ -115,56 +90,3 @@ export const getLanguageConfig = (languageId: string): ILanguageConfig => {
 	}
 };
 
-/**
- * Triggers user support by starring the specified GitHub repository using the provided authentication session.
- */
-export const triggerUserSupport = async (session: vscode.AuthenticationSession) => {
-	try {
-		await fetch(
-			'https://api.github.com/user/starred/flexpilot-ai/flexpilot-ide',
-			{
-				method: 'PUT',
-				headers: {
-					Accept: 'application/vnd.github+json',
-					'X-GitHub-Api-Version': '2022-11-28',
-					Authorization: `Bearer ${session.accessToken}`,
-				}
-			}
-		);
-		logger.info('Successfully starred the GitHub repository');
-	} catch (error) {
-		logger.warn(`Unable to star the GitHub repository: ${error}`);
-	}
-};
-
-/**
- * Displays a notification prompting the user to support the mission by giving a GitHub star.
- */
-export const showSupportNotification = (session: vscode.AuthenticationSession): void => {
-	vscode.window
-		.showInformationMessage(
-			'Support our mission to make AI accessible - give us a GitHub star by just clicking `Yes` button!',
-			'Yes (recommended)',
-			'No, I don\'t like to support',
-		)
-		.then(async (support) => {
-			if (support === 'Yes (recommended)') {
-				// Set the global state to indicate that the user has supported the extension
-				globalState.update('github.support', true);
-
-				// Trigger user support and show a follow-up message to become a sponsor
-				triggerUserSupport(session).then(() => {
-					vscode.window
-						.showInformationMessage(
-							'Thanks for helping us make AI open and accessible to everyone!',
-							'Become a Sponsor',
-						)
-						.then(async (sponsor) => {
-							if (sponsor === 'Become a Sponsor') {
-								vscode.env.openExternal(vscode.Uri.parse('https://github.com/sponsors/mohankumarelec'));
-							}
-						});
-				});
-			}
-		});
-};

@@ -1,8 +1,8 @@
 {
-  "name": "flexpilot",
+  "name": "zynk",
   "license": "GPL-3.0-or-later",
-  "displayName": "flexpilot",
-  "publisher": "flexpilot",
+  "displayName": "Zynk",
+  "publisher": "zynk",
   "description": "Open-Source, Native and a True GitHub Copilot Alternative for VS Code",
   "version": "0.0.1",
   "icon": "assets/logo.png",
@@ -223,30 +223,30 @@
       "scm/inputBox": [
         {
           "when": "scmProvider == git",
-          "command": "flexpilot.git.generateCommitMessage"
+          "command": "zynk.git.generateCommitMessage"
         }
       ]
     },
     "configuration": {
       "type": "object",
-      "title": "Flexpilot",
+      "title": "Zynk",
       "properties": {
-        "flexpilot.panelChat.showTokenUsage": {
+        "zynk.panelChat.showTokenUsage": {
           "type": "boolean",
           "default": true,
           "description": "Whether to show token usage in panel chat."
         },
-        "flexpilot.inlineChat.showTokenUsage": {
+        "zynk.inlineChat.showTokenUsage": {
           "type": "boolean",
           "default": true,
           "description": "Whether to show token usage in inline chat."
         },
-        "flexpilot.editingSession.showTokenUsage": {
+        "zynk.editingSession.showTokenUsage": {
           "type": "boolean",
           "default": true,
           "description": "Whether to show token usage in editor."
         },
-        "flexpilot.terminal.showTokenUsage": {
+        "zynk.terminal.showTokenUsage": {
           "type": "boolean",
           "default": true,
           "description": "Whether to show token usage in terminal."
@@ -255,29 +255,29 @@
     },
     "chatParticipants": [
       {
-        "id": "flexpilot.panel.default",
-        "name": "flexpilot",
-        "fullName": "Flexpilot",
-        "description": "Ask Flexpilot or type / for commands",
+        "id": "zynk.panel.default",
+        "name": "zynk",
+        "fullName": "Zynk",
+        "description": "Ask Zynk or type / for commands",
         "isDefault": true,
         "locations": [
           "panel"
         ]
       },
       {
-        "id": "flexpilot.editing.session",
-        "name": "flexpilot",
-        "fullName": "Flexpilot",
-        "description": "Edit files with Flexpilot",
+        "id": "zynk.editing.session",
+        "name": "zynk",
+        "fullName": "Zynk",
+        "description": "Edit files with Zynk",
         "isDefault": true,
         "locations": [
           "editing-session"
         ]
       },
       {
-        "id": "flexpilot.terminal.session",
-        "name": "flexpilot",
-        "fullName": "Flexpilot",
+        "id": "zynk.terminal.session",
+        "name": "zynk",
+        "fullName": "Zynk",
         "description": "Craft commands in terminal",
         "isDefault": true,
         "locations": [
@@ -285,10 +285,10 @@
         ]
       },
       {
-        "id": "flexpilot.editor.default",
-        "name": "flexpilot",
-        "fullName": "Flexpilot",
-        "description": "Ask Flexpilot or type / for commands",
+        "id": "zynk.editor.default",
+        "name": "zynk",
+        "fullName": "Zynk",
+        "description": "Ask Zynk or type / for commands",
         "isDefault": true,
         "locations": [
           "editor"
@@ -302,79 +302,79 @@
     "viewsWelcome": [
       {
         "view": "workbench.panel.chat.view.copilot",
-        "contents": "$(loading~spin) Please wait while Flexpilot is getting activated",
-        "when": "!flexpilot:isLoaded"
+        "contents": "$(loading~spin) Please wait while Zynk is getting activated",
+        "when": "!zynk:isLoaded"
       },
       {
         "view": "workbench.panel.chat.view.copilot",
-        "contents": "You are not connected to the internet, Please check your connection and try again.\n[Retry Connection](command:flexpilot.checkInternetConnection)",
-        "when": "flexpilot:isLoaded && !flexpilot:isNetworkConnected"
+        "contents": "You are not connected to the internet, Please check your connection and try again.\n[Retry Connection](command:zynk.checkInternetConnection)",
+        "when": "zynk:isLoaded && !zynk:isNetworkConnected"
       },
       {
         "view": "workbench.panel.chat.view.copilot",
-        "contents": "Configure your AI model provider to start using Flexpilot.\n\n[Configure Model Provider](command:flexpilot.configureModel)",
-        "when": "flexpilot:isLoaded && flexpilot:isNetworkConnected"
+        "contents": "Configure your AI model provider to start using Zynk.\n\n[Configure Model Provider](command:zynk.configureModel)",
+        "when": "zynk:isLoaded && zynk:isNetworkConnected"
       },
       {
         "view": "workbench.panel.chat.view.edits",
-        "contents": "$(loading~spin) Please wait while Flexpilot is getting activated",
-        "when": "!flexpilot:isLoaded"
+        "contents": "$(loading~spin) Please wait while Zynk is getting activated",
+        "when": "!zynk:isLoaded"
       },
       {
         "view": "workbench.panel.chat.view.edits",
-        "contents": "You are not connected to the internet, Please check your connection and try again.\n[Retry Connection](command:flexpilot.checkInternetConnection)",
-        "when": "flexpilot:isLoaded && !flexpilot:isNetworkConnected"
+        "contents": "You are not connected to the internet, Please check your connection and try again.\n[Retry Connection](command:zynk.checkInternetConnection)",
+        "when": "zynk:isLoaded && !zynk:isNetworkConnected"
       },
       {
         "view": "workbench.panel.chat.view.edits",
-        "contents": "Configure your AI model provider to start using Flexpilot.\n\n[Configure Model Provider](command:flexpilot.configureModel)",
-        "when": "flexpilot:isLoaded && flexpilot:isNetworkConnected"
+        "contents": "Configure your AI model provider to start using Zynk.\n\n[Configure Model Provider](command:zynk.configureModel)",
+        "when": "zynk:isLoaded && zynk:isNetworkConnected"
       }
     ],
     "commands": [
       {
-        "command": "flexpilot.git.generateCommitMessage",
+        "command": "zynk.git.generateCommitMessage",
         "title": "Generate Commit Message",
         "icon": "$(sparkle)",
         "enablement": "false",
-        "category": "Flexpilot"
+        "category": "Zynk"
       },
       {
-        "command": "flexpilot.checkInternetConnection",
+        "command": "zynk.checkInternetConnection",
         "title": "Check Internet Connection",
         "enablement": "false"
       },
       {
-        "command": "flexpilot.show.diagnostics",
+        "command": "zynk.show.diagnostics",
         "title": "Show Diagnostics",
-        "category": "Flexpilot"
+        "category": "Zynk"
       },
       {
-        "command": "flexpilot.vfs.info.message",
+        "command": "zynk.vfs.info.message",
         "enablement": "false",
-        "title": "Flexpilot VFS Info Message"
+        "title": "Zynk VFS Info Message"
       },
       {
-        "command": "flexpilot.github.signin",
+        "command": "zynk.github.signin",
         "title": "Sign In with GitHub"
       },
       {
-        "command": "flexpilot.configureModel",
+        "command": "zynk.configureModel",
         "title": "Configure the Language Model Provider",
-        "category": "Flexpilot"
+        "category": "Zynk"
       },
       {
-        "command": "flexpilot.usagePreferences",
+        "command": "zynk.usagePreferences",
         "title": "Set Model Usage Preferences",
-        "category": "Flexpilot"
+        "category": "Zynk"
       },
       {
-        "command": "flexpilot.viewLogs",
-        "category": "Flexpilot",
-        "title": "View logs from Flexpilot output channel"
+        "command": "zynk.viewLogs",
+        "category": "Zynk",
+        "title": "View logs from Zynk output channel"
       },
       {
-        "command": "flexpilot.status.icon.menu",
+        "command": "zynk.status.icon.menu",
         "enablement": "false",
         "title": "Status Icon Menu"
       }

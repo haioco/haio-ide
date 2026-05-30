@@ -129,7 +129,7 @@ export class GitHubFileSystemProvider implements vscode.FileSystemProvider, vsco
 			'Get Desktop Version'
 		).then(value => {
 			if (value === 'Get Desktop Version') {
-				vscode.env.openExternal(vscode.Uri.parse('https://flexpilot.ai/'));
+				vscode.env.openExternal(vscode.Uri.parse('https://github.com/your-repo/zynk-ide'));
 			}
 		});
 		return null;
@@ -360,5 +360,5 @@ export const handleGitHubFileSystemProvider = async (uri: vscode.Uri) => {
 	logger.info('Text search provider registered');
 
 	// Show a message to inform the user about virtual file system
-	vscode.commands.executeCommand('flexpilot.vfs.info.message');
+	vscode.commands.executeCommand('zynk.vfs.info.message');
 };

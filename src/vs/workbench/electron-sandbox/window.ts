@@ -134,7 +134,7 @@ export class NativeWindow extends BaseWindow {
 		super(mainWindow, undefined, hostService, nativeEnvironmentService);
 
 		CommandsRegistry.registerCommand(
-			'flexpilot.custom.dialog.show',
+			'zynk.custom.dialog.show',
 			(_accessor: ServicesAccessor, options: ICustomDialogInputOptions) => {
 				return dialogService.input(options);
 			},

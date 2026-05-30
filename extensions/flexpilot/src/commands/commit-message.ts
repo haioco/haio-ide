@@ -73,9 +73,9 @@ const handler = async (repositoryUri: vscode.Uri, _ISCMInputValueProviderContext
 };
 
 /**
- * Registers the `flexpilot.git.generateCommitMessage` command with the Visual Studio Code extension context.
+ * Registers the `zynk.git.generateCommitMessage` command with the Visual Studio Code extension context.
  */
 export const registerCommitMessageCommand = () => {
-	registerDisposable(vscode.commands.registerCommand('flexpilot.git.generateCommitMessage', handler));
-	logger.info('Command `flexpilot.git.generateCommitMessage` registered');
+	registerDisposable(vscode.commands.registerCommand('zynk.git.generateCommitMessage', handler));
+	logger.info('Command `zynk.git.generateCommitMessage` registered');
 };

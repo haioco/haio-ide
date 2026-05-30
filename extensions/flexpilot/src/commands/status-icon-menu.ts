@@ -26,7 +26,7 @@ const handler = async () => {
 			kind: vscode.QuickPickItemKind.Separator
 		},
 		{
-			label: '$(chat-editor-label-icon) Open Flexpilot Chat',
+			label: '$(chat-editor-label-icon) Open Zynk Chat',
 			handler: async () => vscode.commands.executeCommand('workbench.panel.chat.view.copilot.focus'),
 		},
 		{
@@ -35,11 +35,11 @@ const handler = async () => {
 		},
 		{
 			label: '$(settings-gear) Edit Settings...',
-			handler: async () => vscode.commands.executeCommand('workbench.action.openSettings', 'flexpilot'),
+			handler: async () => vscode.commands.executeCommand('workbench.action.openSettings', 'zynk'),
 		},
 		{
 			label: 'Open Diagnostics',
-			handler: async () => vscode.commands.executeCommand('flexpilot.show.diagnostics'),
+			handler: async () => vscode.commands.executeCommand('zynk.show.diagnostics'),
 		},
 		{
 			label: 'Open Logs',
@@ -48,10 +48,6 @@ const handler = async () => {
 		{
 			label: '',
 			kind: vscode.QuickPickItemKind.Separator
-		},
-		{
-			label: '$(remote-explorer-documentation) View Flexpilot Docs...',
-			handler: async () => { await vscode.env.openExternal(vscode.Uri.parse('https://flexpilot.ai/installation')); },
 		},
 	];
 
@@ -80,14 +76,14 @@ const handler = async () => {
 	return vscode.window.showQuickPick(menuItems, {
 		placeHolder: 'Select an option',
 		ignoreFocusOut: true,
-		title: 'Flexpilot: Completions Settings',
+		title: 'Zynk: Completions Settings',
 	}).then((item) => item?.handler ? item.handler() : undefined);
 };
 
 /**
- * Registers the `flexpilot.status.icon.menu` command with the VS Code extension context.
+ * Registers the `zynk.status.icon.menu` command with the VS Code extension context.
  */
 export const registerStatusIconMenuCommand = () => {
-	registerDisposable(vscode.commands.registerCommand('flexpilot.status.icon.menu', handler));
-	logger.info('Command `flexpilot.status.icon.menu` registered');
+	registerDisposable(vscode.commands.registerCommand('zynk.status.icon.menu', handler));
+	logger.info('Command `zynk.status.icon.menu` registered');
 };

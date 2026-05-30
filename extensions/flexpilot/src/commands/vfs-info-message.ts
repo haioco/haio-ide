@@ -13,18 +13,14 @@ import { registerDisposable } from '../context';
 const handler = async () => {
 	vscode.window.showInformationMessage(
 		'This browser-based IDE offers a minimal experience with temporary data storage that will be lost on refresh or close; use the desktop version for full features and persistence.',
-		{ modal: true }, 'Continue', 'Download Desktop IDE'
-	).then((selection) => {
-		if (selection === 'Download Desktop IDE') {
-			vscode.env.openExternal(vscode.Uri.parse('https://flexpilot.ai'));
-		}
-	});
+		{ modal: true }, 'Continue'
+	);
 };
 
 /**
  * Registers the information message command for the virtual file system.
  */
 export const registerVfsInfoMessageCommand = () => {
-	registerDisposable(vscode.commands.registerCommand('flexpilot.vfs.info.message', handler));
-	logger.info('Command `flexpilot.vfs.info.message` registered');
+	registerDisposable(vscode.commands.registerCommand('zynk.vfs.info.message', handler));
+	logger.info('Command `zynk.vfs.info.message` registered');
 };

@@ -221,9 +221,9 @@ export const modelProviderManager = {
 						progress.report({
 							index: 0,
 							part: new vscode.LanguageModelTextPart(`
-								<flexpilot-llm-token-usage>
+								<zynk-llm-token-usage>
 									${JSON.stringify(tokenUsage)}
-								</flexpilot-llm-token-usage>
+								</zynk-llm-token-usage>
 								`)
 						});
 					}

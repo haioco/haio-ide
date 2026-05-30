@@ -280,7 +280,7 @@ export interface ICustomDialogOptions {
 	readonly icon?: ThemeIcon;
 	readonly disableCloseAction?: boolean;
 	readonly closeOnLinkClick?: boolean;
-	readonly dialogId?: 'flexpilot-model-config';
+	readonly dialogId?: 'flexpilot-model-config' | 'zynk-model-config';
 }
 
 export interface ICustomDialogMarkdown {

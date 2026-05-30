@@ -321,8 +321,7 @@ export const panelChatPrompts = {
 			<Message role='user'>
 				<p>
 					{/* allow-any-unicode-next-line */}
-					📚 Explore the Flexpilot IDE official documentation{' '}
-					<a href='https://flexpilot.ai'>here</a> for all the details.
+					📚 Welcome to Zynk IDE. Configure your model provider to get started.
 				</p>
 			</Message>
 		);

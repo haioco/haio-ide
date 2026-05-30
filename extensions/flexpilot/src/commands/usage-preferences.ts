@@ -11,7 +11,7 @@ import { modelConfigs, registerDisposable, usagePreferences } from '../context';
 import { LOCATIONS } from '../constants';
 
 /**
- * Handles the model configuration process for the Flexpilot extension.
+ * Handles the model configuration process for the Zynk extension.
  */
 interface ILocationQuickPickItem extends vscode.QuickPickItem {
 	locationId: typeof LOCATIONS[number]['id'];
@@ -26,7 +26,7 @@ interface IModelQuickPickItem extends vscode.QuickPickItem {
 }
 
 /**
- * Handles the model configuration process for the Flexpilot extension.
+ * Handles the model configuration process for the Zynk extension.
  */
 const handler = async () => {
 	// Get the location to modify the model usage preferences
@@ -52,7 +52,7 @@ const handler = async () => {
 	const pickedLocation = await vscode.window.showQuickPick(
 		locationQuickPickItems,
 		{
-			title: 'Flexpilot: Modify Model Usage Preferences',
+			title: 'Zynk: Modify Model Usage Preferences',
 			ignoreFocusOut: true,
 			canPickMany: false,
 			placeHolder: 'Select the usage location',
@@ -106,7 +106,7 @@ const handler = async () => {
 
 	// Show the quick pick for model selection
 	const pickedModel = await vscode.window.showQuickPick(modelQuickPickItems, {
-		title: 'Flexpilot: Modify Model Usage Preferences',
+		title: 'Zynk: Modify Model Usage Preferences',
 		ignoreFocusOut: true,
 		canPickMany: false,
 		placeHolder: `Select the model config to be used in \`${pickedLocation.label}\``,
@@ -124,9 +124,9 @@ const handler = async () => {
 };
 
 /**
- * Registers the model configuration command for the Flexpilot extension.
+ * Registers the model configuration command for the Zynk extension.
  */
 export const registerUsagePreferencesCommand = () => {
-	registerDisposable(vscode.commands.registerCommand('flexpilot.usagePreferences', handler));
-	logger.info('Command `flexpilot.usagePreferences` registered');
+	registerDisposable(vscode.commands.registerCommand('zynk.usagePreferences', handler));
+	logger.info('Command `zynk.usagePreferences` registered');
 };

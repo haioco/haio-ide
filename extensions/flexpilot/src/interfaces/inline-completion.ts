@@ -286,11 +286,11 @@ export const register = async () => {
 
 	// Register the status bar item for the extension
 	statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right);
-	statusBarItem.accessibilityInformation = { label: 'Flexpilot Status', role: 'status' };
-	statusBarItem.tooltip = 'Flexpilot Status';
-	statusBarItem.name = 'Flexpilot Status';
+	statusBarItem.accessibilityInformation = { label: 'Zynk Status', role: 'status' };
+	statusBarItem.tooltip = 'Zynk Status';
+	statusBarItem.name = 'Zynk Status';
 	statusBarItem.text = '$(copilot)';
-	statusBarItem.command = 'flexpilot.status.icon.menu';
+	statusBarItem.command = 'zynk.status.icon.menu';
 	statusBarItem.show();
 
 	// Register the inline completion item provider

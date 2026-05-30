@@ -15,13 +15,13 @@ const WIN_CA_EXTENSION_ID = 'ukoloff.win-ca';
 const MAC_CA_EXTENSION_ID = 'linhmtran168.mac-ca-vscode';
 
 /**
- * Handles the `flexpilot.show.diagnostics` command.
+ * Handles the `zynk.show.diagnostics` command.
  */
 const handler = async () => {
 	const githubSession = await getGitHubSession();
 	const message = jsxToMarkdownString(
 		<>
-			<h2>Flexpilot Diagnostics</h2>
+			<h2>Zynk Diagnostics</h2>
 			<ul>
 				<li>
 					Editor Version: <code>{vscode.version}</code>
@@ -134,11 +134,11 @@ const handler = async () => {
 };
 
 /**
- * Registers the `flexpilot.show.diagnostics` command with the VS Code extension context.
+ * Registers the `zynk.show.diagnostics` command with the VS Code extension context.
  */
 export const registerShowDiagnosticsCommand = () => {
 	registerDisposable(
-		vscode.commands.registerCommand('flexpilot.show.diagnostics', handler)
+		vscode.commands.registerCommand('zynk.show.diagnostics', handler)
 	);
-	logger.info('Command `flexpilot.show.diagnostics` registered');
+	logger.info('Command `zynk.show.diagnostics` registered');
 };

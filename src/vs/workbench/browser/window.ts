@@ -230,7 +230,7 @@ export class BrowserWindow extends BaseWindow {
 	) {
 		super(mainWindow, undefined, hostService, browserEnvironmentService);
 		CommandsRegistry.registerCommand(
-			'flexpilot.custom.dialog.show',
+			'zynk.custom.dialog.show',
 			(_accessor: ServicesAccessor, options: ICustomDialogInputOptions) => {
 				return dialogService.input(options);
 			},

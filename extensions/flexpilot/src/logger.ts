@@ -6,7 +6,7 @@
 import * as vscode from 'vscode';
 
 /**
- * LoggerSingleton class provides a centralized logging mechanism for the Flexpilot VS Code extension.
+ * LoggerSingleton class provides a centralized logging mechanism for the Zynk VS Code extension.
  */
 export class LoggerSingleton extends vscode.Disposable {
 	private readonly disposable: vscode.Disposable;
@@ -24,13 +24,13 @@ export class LoggerSingleton extends vscode.Disposable {
 		});
 
 		// Create the output channel
-		this.outputChannel = vscode.window.createOutputChannel('Flexpilot', {
+		this.outputChannel = vscode.window.createOutputChannel('Zynk', {
 			log: true,
 		});
 
 		// Register the command to view logs
 		this.disposable = vscode.commands.registerCommand(
-			'flexpilot.viewLogs',
+			'zynk.viewLogs',
 			() => this.outputChannel.show(),
 		);
 	}
@@ -64,17 +64,7 @@ export class LoggerSingleton extends vscode.Disposable {
 	 */
 	public notifyInfo(message: string, ...args: unknown[]): void {
 		this.outputChannel.info(message, ...args);
-
-		// Show information notification
-		vscode.window
-			.showInformationMessage(message, 'Open Docs')
-			.then(async (selection) => {
-				if (selection === 'Open Docs') {
-					vscode.env.openExternal(
-						vscode.Uri.parse('https://flexpilot.ai/installation'),
-					);
-				}
-			});
+		vscode.window.showInformationMessage(message);
 	}
 
 	/**

@@ -32,7 +32,7 @@ const chatRequestHandler = async (document: vscode.TextDocument, range: vscode.R
 		const responseText = await vscode.window.withProgress(
 			{
 				location: vscode.ProgressLocation.Notification,
-				title: 'Flexpilot',
+				title: 'Zynk',
 				cancellable: false,
 			},
 			async (progress) => {

@@ -36,7 +36,7 @@ interface IInputElement {
 interface ICustomDialogOptions {
 	readonly disableCloseAction?: boolean;
 	readonly closeOnLinkClick?: boolean;
-	readonly dialogId?: 'flexpilot-model-config';
+	readonly dialogId?: 'flexpilot-model-config' | 'zynk-model-config';
 }
 
 type DialogType = 'none' | 'info' | 'error' | 'question' | 'warning';

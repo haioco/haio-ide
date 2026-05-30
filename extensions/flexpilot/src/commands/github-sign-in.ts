@@ -9,13 +9,13 @@ import { globalState, registerDisposable } from '../context';
 import { getGitHubSession } from '../utilities';
 
 /**
- * Handles the GitHub sign-in process for the Flexpilot extension.
+ * Handles the GitHub sign-in process for the Zynk extension.
  */
 const handler = async () => {
 	// Check if the user has already accepted GitHub support
 	if (!globalState.get('github.support')) {
 		const selectedOption = await vscode.window.showInformationMessage(
-			'Flexpilot: Support Us!',
+			'Zynk: Support Us!',
 			{
 				modal: true,
 				detail: 'Help our open-source project stay alive. We\'ll auto- star on GitHub when you sign in. No extra steps!',
@@ -36,9 +36,9 @@ const handler = async () => {
 
 
 /**
- * Registers the GitHub sign-in command for the Flexpilot extension.
+ * Registers the GitHub sign-in command for the Zynk extension.
  */
 export const registerGithubSignInCommand = () => {
-	registerDisposable(vscode.commands.registerCommand('flexpilot.github.signin', handler));
-	logger.info('Command `flexpilot.github.signin` registered');
+	registerDisposable(vscode.commands.registerCommand('zynk.github.signin', handler));
+	logger.info('Command `zynk.github.signin` registered');
 };
