@@ -13,7 +13,6 @@ import { IEnvironmentService } from '../../environment/common/environment.js';
 import { ILogService } from '../../log/common/log.js';
 import { IConfigurationService } from '../../configuration/common/configuration.js';
 import { AbstractExtensionResourceLoaderService, IExtensionResourceLoaderService } from '../common/extensionResourceLoader.js';
-import { isWeb } from '../../../base/common/platform.js';
 
 /**
  * Returns the URL as-is (no CORS proxy needed for direct API access).
