@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
-import { generateText } from 'ai';
 import * as vscode from 'vscode';
 import { IChatModelProvider, IChatModelProviderResult, IModelConfig } from '../types';
 import { corsEnableUrl } from '../utilities';
@@ -100,30 +99,6 @@ export class GoogleChatModelProvider extends IChatModelProvider {
 			throw new Error('Temperature is required and must be a valid number');
 		}
 
-		// Test the connection credentials before saving the configuration
-		await vscode.window.withProgress(
-			{
-				location: vscode.ProgressLocation.Notification,
-				title: 'Zynk',
-				cancellable: true,
-			},
-			async (progress, token) => {
-				const abortController = new AbortController();
-				token.onCancellationRequested(() => abortController.abort());
-				progress.report({ message: 'Testing connection credentials' });
-				const google = createGoogleGenerativeAI({
-					apiKey: apiKey,
-					baseURL: baseUrl,
-				});
-				await generateText({
-					prompt: 'Hello',
-					maxTokens: 3,
-					temperature: parseFloat(temperature),
-					model: google.chat(modelId),
-					abortSignal: abortController.signal
-				});
-			}
-		);
 
 		const newConfig: IGoogleGenerativeAIChatModelConfig = {
 			// Base model configuration

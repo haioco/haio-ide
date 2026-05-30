@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { createAzure } from '@ai-sdk/azure';
-import { generateText } from 'ai';
 import * as vscode from 'vscode';
 import { IChatModelProvider, IChatModelProviderResult, IModelConfig } from '../types';
 import { corsEnableUrl } from '../utilities';
@@ -100,30 +99,6 @@ export class AzureOpenAIChatModelProvider extends IChatModelProvider {
 			throw new Error('Temperature is required and must be a valid number');
 		}
 
-		// Test the connection credentials before saving the configuration
-		await vscode.window.withProgress(
-			{
-				location: vscode.ProgressLocation.Notification,
-				title: 'Zynk',
-				cancellable: true,
-			},
-			async (progress, token) => {
-				const abortController = new AbortController();
-				token.onCancellationRequested(() => abortController.abort());
-				progress.report({ message: 'Testing connection credentials' });
-				const provider = createAzure({
-					apiKey: apiKey,
-					baseURL: baseUrl,
-				});
-				await generateText({
-					prompt: 'Hello',
-					maxTokens: 3,
-					temperature: parseFloat(temperature),
-					model: provider.chat(modelId),
-					abortSignal: abortController.signal
-				});
-			}
-		);
 
 		const newConfig: IAzureOpenAIChatModelConfig = {
 			// Base model configuration

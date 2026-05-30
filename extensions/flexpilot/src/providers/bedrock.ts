@@ -9,7 +9,6 @@ import { IChatModelProvider, IChatModelProviderResult, IModelConfig } from '../t
 import { ICustomDialogInputOptions, ICustomDialogOutputResult } from '../../../../src/vscode-dts/flexpilot';
 import { DEFAULT_MODEL_PARAMS } from '../constants';
 import { modelConfigs } from '../context';
-import { generateText } from 'ai';
 
 /**
  * Extended interface for Amazon Bedrock chat model configuration
@@ -115,32 +114,6 @@ export class AmazonBedrockChatModelProvider extends IChatModelProvider {
 			throw new Error('Temperature is required and must be a valid number');
 		}
 
-		// Test the connection credentials before saving the configuration
-		await vscode.window.withProgress(
-			{
-				location: vscode.ProgressLocation.Notification,
-				title: 'Zynk',
-				cancellable: true,
-			},
-			async (progress, token) => {
-				const abortController = new AbortController();
-				token.onCancellationRequested(() => abortController.abort());
-				progress.report({ message: 'Testing connection credentials' });
-				const provider = createAmazonBedrock({
-					region,
-					accessKeyId,
-					secretAccessKey,
-					sessionToken: sessionToken.trim() || undefined,
-				});
-				await generateText({
-					prompt: 'Hello',
-					maxTokens: 3,
-					temperature: parseFloat(temperature),
-					model: provider.languageModel(modelId),
-					abortSignal: abortController.signal
-				});
-			}
-		);
 
 		const newConfig: IAmazonBedrockChatModelConfig = {
 			// Base model configuration

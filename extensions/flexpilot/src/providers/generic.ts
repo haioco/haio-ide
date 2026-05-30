@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { createOpenAICompatible } from '@mohankumarelec/openai-compatible';
-import { generateText } from 'ai';
 import * as vscode from 'vscode';
 import { IChatModelProvider, IChatModelProviderResult, IModelConfig } from '../types';
 import { corsEnableUrl } from '../utilities';
@@ -143,33 +142,6 @@ export class GenericChatModelProvider extends IChatModelProvider {
 			}
 		}
 
-		// Test the connection credentials before saving the configuration
-		await vscode.window.withProgress(
-			{
-				location: vscode.ProgressLocation.Notification,
-				title: 'Zynk',
-				cancellable: true,
-			},
-			async (progress, token) => {
-				const abortController = new AbortController();
-				token.onCancellationRequested(() => abortController.abort());
-				progress.report({ message: 'Testing connection credentials' });
-				const provider = createOpenAICompatible({
-					name: 'Generic OpenAI Compatible Provider',
-					apiKey: apiKey,
-					baseURL: baseUrl,
-					headers: headers ? JSON.parse(headers) : undefined,
-					params: urlParams ? JSON.parse(urlParams) : undefined
-				});
-				await generateText({
-					prompt: 'Hello',
-					maxTokens: 3,
-					temperature: parseFloat(temperature),
-					model: provider.chatModel(modelId),
-					abortSignal: abortController.signal
-				});
-			}
-		);
 
 		const newConfig: IGenericChatModelConfig = {
 			// Base model configuration

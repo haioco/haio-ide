@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { createOpenAI } from '@ai-sdk/openai';
-import { generateText } from 'ai';
 import * as vscode from 'vscode';
 import { IChatModelProvider, IChatModelProviderResult, IModelConfig } from '../types';
 import { corsEnableUrl } from '../utilities';
@@ -112,32 +111,6 @@ export class OpenAIChatModelProvider extends IChatModelProvider {
 			throw new Error('Temperature is required and must be a valid number');
 		}
 
-		// Test the connection credentials before saving the configuration
-		await vscode.window.withProgress(
-			{
-				location: vscode.ProgressLocation.Notification,
-				title: 'Zynk',
-				cancellable: true,
-			},
-			async (progress, token) => {
-				const abortController = new AbortController();
-				token.onCancellationRequested(() => abortController.abort());
-				progress.report({ message: 'Testing connection credentials' });
-				const provider = createOpenAI({
-					apiKey: apiKey,
-					baseURL: baseUrl,
-					organization: organization.trim() || undefined,
-					project: project.trim() || undefined,
-				});
-				await generateText({
-					prompt: 'Hello',
-					maxTokens: 3,
-					temperature: parseFloat(temperature),
-					model: provider.languageModel(modelId),
-					abortSignal: abortController.signal
-				});
-			}
-		);
 
 		const newConfig: IOpenAIChatModelConfig = {
 			// Base model configuration
