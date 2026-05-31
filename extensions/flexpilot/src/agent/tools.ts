@@ -140,13 +140,19 @@ export const grepSearch: ZynkTool = {
 	invoke: async (args) => {
 		const query = String(args.query);
 		const pattern = args.file_pattern ? String(args.file_pattern) : '{**/*}';
-		const collected: any[] = [];
+		const collected: string[] = [];
 		await vscode.workspace.findTextInFiles(
 			{ pattern: query, isRegExp: false },
 			{ include: pattern, exclude: ignoredGlobs.join(','), maxResults: 30 },
-			(result) => { collected.push(result); }
+			(result) => {
+				const anyResult = result as any;
+				if (anyResult.preview && anyResult.uri) {
+					const line = anyResult.ranges?.[0]?.start?.line ?? 0;
+					collected.push(`${vscode.workspace.asRelativePath(anyResult.uri)}:${line + 1}: ${anyResult.preview.text}`);
+				}
+			}
 		);
-		return collected.map(r => `${vscode.workspace.asRelativePath(r.uri)}:${r.range.start.line + 1}: ${r.preview.text}`).join('\n') || 'No matches found.';
+		return collected.join('\n') || 'No matches found.';
 	}
 };
 

@@ -137,7 +137,7 @@ const chatRequestHandler: vscode.ChatExtendedRequestHandler = async (request, co
 		logger.debug('Request messages for panel chat: \n\n' + JSON.stringify(messages, null, 2));
 
 		// Check if the user has requested token usage
-		const returnTokenUsage = vscode.workspace.getConfiguration().get<boolean>('zynk.panelChat.showTokenUsage');
+		const returnTokenUsage = vscode.workspace.getConfiguration().get<boolean>('zynk.panelChat.showTokenUsage') ?? false;
 
 		// Determine if this model supports tool calls
 		const config = getModelConfig(request.model);
