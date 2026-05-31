@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { logger } from '../logger';
+import { semanticSearch } from './semantic-search';
 
 export interface ZynkTool {
 	name: string;
@@ -251,7 +252,23 @@ export const runCommand: ZynkTool = {
 	}
 };
 
-export const allTools: ZynkTool[] = [getProjectOverview, listDir, readFile, findFiles, grepSearch, createFile, editFile, runCommand];
+export const semanticSearchTool: ZynkTool = {
+	name: 'semantic_search',
+	description: 'Search for code by natural language meaning. Finds files semantically related to the query, not just exact text matches. Scores files by keyword overlap, symbol definitions, and structural relevance.',
+	inputSchema: {
+		type: 'object',
+		properties: {
+			query: { type: 'string', description: 'Natural language description of what you are looking for, e.g. "where authentication is handled".' },
+			limit: { type: 'number', description: 'Maximum number of results (default 10).' }
+		},
+		required: ['query']
+	},
+	invoke: async (args) => {
+		return semanticSearch(String(args.query), Number(args.limit) || 10);
+	}
+};
+
+export const allTools: ZynkTool[] = [getProjectOverview, listDir, readFile, findFiles, grepSearch, semanticSearchTool, createFile, editFile, runCommand];
 
 export const getToolSchemas = (): vscode.LanguageModelChatTool[] => {
 	return allTools.map(t => ({

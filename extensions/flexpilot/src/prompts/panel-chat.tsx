@@ -271,8 +271,9 @@ export const buildRequest = async (
 					<li>
 						You have access to tools that let you explore and modify the workspace:
 						get_project_overview, list_dir, read_file, find_files, grep_search,
-						create_file, edit_file, run_command.
+						semantic_search, create_file, edit_file, run_command.
 						Always inspect relevant files before answering questions about the codebase.
+						Use semantic_search for broad "where is X handled" queries; use grep_search for exact text.
 						When editing, make sure old_string matches exactly (including whitespace).
 					</li>
 				</ul>
