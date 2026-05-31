@@ -7,6 +7,7 @@ import { createOpenAI } from '@ai-sdk/openai';
 import * as vscode from 'vscode';
 import { IChatModelProvider, IChatModelProviderResult, IModelConfig } from '../types';
 import { corsEnableUrl } from '../utilities';
+import { createPatchedFetch } from './fetch-patch';
 import { ICustomDialogInputOptions, ICustomDialogOutputResult } from '../../../../src/vscode-dts/flexpilot';
 import { DEFAULT_MODEL_PARAMS } from '../constants';
 import { modelConfigs } from '../context';
@@ -150,6 +151,7 @@ export class OpenAIChatModelProvider extends IChatModelProvider {
 				baseURL: corsEnableUrl(config.baseUrl),
 				organization: config.organization,
 				project: config.project,
+				fetch: createPatchedFetch(fetch),
 			}).languageModel(config.modelId),
 			settings: {
 				temperature: config.temperature,
