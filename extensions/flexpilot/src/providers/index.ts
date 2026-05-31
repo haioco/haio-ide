@@ -9,6 +9,7 @@ import * as vscode from 'vscode';
 import { AssistantContent, CoreMessage, CoreTool, jsonSchema, streamText, TextPart, ToolResultPart } from 'ai';
 import { GenericChatModelProvider } from './generic';
 import { modelConfigs } from '../context';
+import { setContext } from '../utilities';
 import { GroqCloudChatModelProvider } from './groq';
 import { MistralAIChatModelProvider } from './mistral-ai';
 import { OpenAIChatModelProvider } from './openai';
@@ -256,6 +257,7 @@ export const modelProviderManager = {
 
 		// Store the disposable for the provider in the map
 		providers.set(configId, disposable);
+		await setContext('hasModelConfigured', true);
 	},
 
 	/**
@@ -265,6 +267,7 @@ export const modelProviderManager = {
 		for (const item of modelConfigs.list()) {
 			await modelProviderManager.register(item);
 		}
+		await setContext('hasModelConfigured', providers.size > 0);
 	},
 
 	/**
@@ -279,6 +282,7 @@ export const modelProviderManager = {
 		if (configId === defaultChatModel) {
 			defaultChatModel = undefined;
 		}
+		await setContext('hasModelConfigured', providers.size > 0);
 	},
 
 	/**
@@ -288,5 +292,6 @@ export const modelProviderManager = {
 		for (const item of providers.keys()) {
 			await modelProviderManager.dispose(item);
 		}
+		await setContext('hasModelConfigured', false);
 	}
 };

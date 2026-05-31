@@ -313,7 +313,7 @@
       {
         "view": "workbench.panel.chat.view.copilot",
         "contents": "Configure your AI model provider to start using Zynk.\n\n[Configure Model Provider](command:zynk.configureModel)",
-        "when": "zynk:isLoaded && zynk:isNetworkConnected"
+        "when": "zynk:isLoaded && zynk:isNetworkConnected && !zynk:hasModelConfigured"
       },
       {
         "view": "workbench.panel.chat.view.edits",
@@ -328,7 +328,7 @@
       {
         "view": "workbench.panel.chat.view.edits",
         "contents": "Configure your AI model provider to start using Zynk.\n\n[Configure Model Provider](command:zynk.configureModel)",
-        "when": "zynk:isLoaded && zynk:isNetworkConnected"
+        "when": "zynk:isLoaded && zynk:isNetworkConnected && !zynk:hasModelConfigured"
       }
     ],
     "commands": [

@@ -9,8 +9,6 @@ import { logger } from '../logger';
 import { modelProviderManager, ModelProviders } from '../providers';
 import { globalState, modelConfigs, registerDisposable } from '../context';
 import { ICustomDialogInputOptions, ICustomDialogOutputResult } from '../../../../src/vscode-dts/flexpilot';
-import OpenAI from 'openai';
-import { corsEnableUrl } from '../utilities';
 
 /**
  * Interface for quick pick items.
@@ -193,29 +191,6 @@ const completionsConfiguration = async (): Promise<void> => {
 		if (!debouncerWait || !debouncerWait.trim().length || isNaN(parseInt(debouncerWait))) {
 			throw new Error('Debouncer Wait is required and must be a number');
 		}
-
-		// Test the connection credentials before saving the configuration
-		await vscode.window.withProgress(
-			{
-				location: vscode.ProgressLocation.Notification,
-				title: 'Zynk',
-				cancellable: true,
-			},
-			async (progress) => {
-				progress.report({ message: 'Testing connection credentials' });
-				const openai = new OpenAI({
-					apiKey: apiKey,
-					baseURL: corsEnableUrl(baseUrl)
-				});
-				await openai.completions.create({
-					max_tokens: 10,
-					model: modelId,
-					temperature: parseFloat(temperature),
-					prompt: 'How',
-					suffix: 'doing?',
-				});
-			}
-		);
 
 		// Enable the completions provider
 		await globalState.update('completions.disabled', false);

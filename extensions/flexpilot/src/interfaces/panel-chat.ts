@@ -7,19 +7,17 @@ import * as vscode from 'vscode';
 import { logger } from '../logger';
 import { panelChatPrompts, getWelcomeMessage, buildTitleProviderRequest, buildFollowupProviderRequest, buildRequest } from '../prompts/panel-chat';
 import { usagePreferences } from '../context';
-import { getGitHubSession, parseTokenUsage } from '../utilities';
+import { parseTokenUsage } from '../utilities';
 
 /**
  * Provides welcome messages and sample questions for the Flexpilot chat panel.
  */
 const welcomeMessageProvider: vscode.ChatWelcomeMessageProvider = {
 	provideWelcomeMessage: async () => {
-		const githubSession = await getGitHubSession();
-		const user = githubSession?.account?.label || 'User';
 		return {
 			icon: new vscode.ThemeIcon('copilot'),
 			title: 'Ask Zynk',
-			message: getWelcomeMessage(user),
+			message: getWelcomeMessage('User'),
 		};
 	},
 
@@ -179,12 +177,8 @@ export const register = async () => {
 
 	// Set up requester information
 	chatParticipant.iconPath = new vscode.ThemeIcon('copilot');
-	const githubSession = await getGitHubSession();
-	const user = githubSession?.account?.label || 'User';
-	const accountId = githubSession?.account?.id;
 	chatParticipant.requester = {
-		name: user,
-		icon: accountId ? vscode.Uri.parse(`https://avatars.githubusercontent.com/u/${accountId}`) : undefined,
+		name: 'User',
 	};
 	logger.info('Panel chat participant registered');
 };
