@@ -45,7 +45,7 @@ jobs:
 
       - name: Package Application for Distribution
         working-directory: ./VSCode-darwin-${{ matrix.arch }}
-        run: ditto -c -k --sequesterRsrc --keepParent "Flexpilot.app" "macos-${{ matrix.arch }}-app.zip"
+        run: ditto -c -k --sequesterRsrc --keepParent "Zynk.app" "macos-${{ matrix.arch }}-app.zip"
 
       - name: Upload Application Artifact
         uses: actions/upload-artifact@v4
@@ -91,7 +91,7 @@ jobs:
         working-directory: ./repository
         run: npm install
 
-      - name: Build Flexpilot Executables
+      - name: Build Zynk Executables
         working-directory: ./repository
         run: npm run gulp vscode-linux-${{ matrix.arch }}-min
 
@@ -177,8 +177,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: windows-${{ matrix.arch }}-${{ matrix.target }}-exe
-          path: ${{ github.workspace }}/repository/.build/win32-${{ matrix.arch }}/${{ matrix.target }}-setup/Flexpilot.exe
+          path: ${{ github.workspace }}/repository/.build/win32-${{ matrix.arch }}/${{ matrix.target }}-setup/Zynk.exe
 
       - name: Rename Installer
         working-directory: ${{ github.workspace }}/repository/.build/win32-${{ matrix.arch }}/${{ matrix.target }}-setup
-        run: mv Flexpilot.exe windows-${{ matrix.arch }}-${{ matrix.target }}.exe
+        run: mv Zynk.exe windows-${{ matrix.arch }}-${{ matrix.target }}.exe

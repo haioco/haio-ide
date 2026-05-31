@@ -8,14 +8,11 @@
 AppId={#AppId}
 AppName={#NameLong}
 AppVerName={#NameVersion}
-AppPublisher=Flexpilot AI
-AppPublisherURL=https://flexpilot.ai/
-AppSupportURL=https://flexpilot.ai/
-AppUpdatesURL=https://flexpilot.ai/
+AppPublisher=Zynk
 DefaultGroupName={#NameLong}
 AllowNoIcons=yes
 OutputDir={#OutputDir}
-OutputBaseFilename=Flexpilot
+OutputBaseFilename=Zynk
 Compression=lzma
 SolidCompression=yes
 AppMutex={code:GetAppMutex}

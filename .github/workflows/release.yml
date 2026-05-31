@@ -80,7 +80,7 @@ jobs:
 
       - name: Package Application for Distribution
         working-directory: ./VSCode-darwin-${{ matrix.arch }}
-        run: ditto -c -k --sequesterRsrc --keepParent "Flexpilot.app" "macos-${{ matrix.arch }}-app.zip"
+        run: ditto -c -k --sequesterRsrc --keepParent "Zynk.app" "macos-${{ matrix.arch }}-app.zip"
 
       - name: Notarize Application for macOS
         working-directory: ./VSCode-darwin-${{ matrix.arch }}
@@ -88,7 +88,7 @@ jobs:
 
       - name: Staple Notarization to Application
         working-directory: ./VSCode-darwin-${{ matrix.arch }}
-        run: xcrun stapler staple "Flexpilot.app"
+        run: xcrun stapler staple "Zynk.app"
 
       - name: Upload Application Artifact
         uses: actions/upload-artifact@v4
@@ -142,7 +142,7 @@ jobs:
         working-directory: ./repository
         run: npm install
 
-      - name: Build Flexpilot Executables
+      - name: Build Zynk Executables
         working-directory: ./repository
         run: npm run gulp vscode-linux-${{ matrix.arch }}-min
 
@@ -260,7 +260,7 @@ jobs:
           endpoint: https://eus.codesigning.azure.net/
           trusted-signing-account-name: ${{ secrets.AZURE_TRUSTED_SIGNING_ACCOUNT_NAME }}
           certificate-profile-name: ${{ secrets.AZURE_CERTIFICATE_PROFILE_NAME }}
-          files: ${{ github.workspace }}/repository/.build/win32-${{ matrix.arch }}/${{ matrix.target }}-setup/Flexpilot.exe
+          files: ${{ github.workspace }}/repository/.build/win32-${{ matrix.arch }}/${{ matrix.target }}-setup/Zynk.exe
           file-digest: SHA256
           timestamp-rfc3161: http://timestamp.acs.microsoft.com
           timestamp-digest: SHA256
@@ -269,11 +269,11 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: windows-${{ matrix.arch }}-${{ matrix.target }}-exe
-          path: ${{ github.workspace }}/repository/.build/win32-${{ matrix.arch }}/${{ matrix.target }}-setup/Flexpilot.exe
+          path: ${{ github.workspace }}/repository/.build/win32-${{ matrix.arch }}/${{ matrix.target }}-setup/Zynk.exe
 
       - name: Rename Installer
         working-directory: ${{ github.workspace }}/repository/.build/win32-${{ matrix.arch }}/${{ matrix.target }}-setup
-        run: mv Flexpilot.exe windows-${{ matrix.arch }}-${{ matrix.target }}.exe
+        run: mv Zynk.exe windows-${{ matrix.arch }}-${{ matrix.target }}.exe
 
       - name: Upload Release Assets
         uses: softprops/action-gh-release@v2
