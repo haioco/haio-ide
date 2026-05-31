@@ -50,14 +50,17 @@ const chatRequestHandler: vscode.ChatExtendedRequestHandler = async (request, co
 		// Determine if this model supports tool calls
 		const config = getModelConfig(request.model);
 		const supportsToolCalls = config?.supportsToolCalls ?? false;
+		logger.info(`[editing-session] model=${request.model.name} version=${request.model.version} supportsToolCalls=${supportsToolCalls} (config found=${!!config})`);
 
 		let responseText: string = '';
 		let isAtleastOneFileModified = false;
 
 		if (supportsToolCalls) {
 			// Agentic loop: model uses create_file / edit_file tools directly
+			logger.info('[editing-session] routing through agent loop');
 			responseText = await runAgentLoop({ messages, model: request.model, response, token, returnTokenUsage });
 			isAtleastOneFileModified = responseText.includes('Created') || responseText.includes('Edited');
+			logger.info(`[editing-session] agent loop done. fileModified=${isAtleastOneFileModified}, responseLength=${responseText.length}`);
 		} else {
 			// Fallback: XML-based file modification streaming
 			response.progress('Generating Edits');

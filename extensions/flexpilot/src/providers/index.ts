@@ -186,6 +186,9 @@ export const modelProviderManager = {
 					// Convert the chat messages to core messages
 					const convertedMessages = messages.map((item) => convertChatToCoreMessage(item));
 
+					logger.info(`[provider] streamText: ${convertedMessages.length} messages, ${Object.keys(tools).length} tools, toolChoice=${toolChoice ?? 'none'}`);
+					logger.debug(`[provider] converted messages: ${JSON.stringify(convertedMessages.map(m => ({ role: m.role, contentType: Array.isArray(m.content) ? m.content.map((c: any) => c.type).join(',') : 'string' })))}`);
+
 					// Stream the full response and usage information
 					const { fullStream, usage } = streamText({
 						...settings,
@@ -198,13 +201,17 @@ export const modelProviderManager = {
 					});
 
 					// Listen for response parts and update the progress
+					let partCount = 0;
 					for await (const part of fullStream) {
+						partCount++;
 						if (part.type === 'text-delta') {
+							logger.debug(`[provider] part #${partCount} text-delta: ${part.textDelta.slice(0, 80)}`);
 							progress.report({
 								index: 0, part:
 									new vscode.LanguageModelTextPart(part.textDelta)
 							});
 						} else if (part.type === 'tool-call') {
+							logger.info(`[provider] part #${partCount} tool-call: ${part.toolName} (id=${part.toolCallId})`);
 							progress.report({
 								index: 0,
 								part: new vscode.LanguageModelToolCallPart(
@@ -212,9 +219,13 @@ export const modelProviderManager = {
 								)
 							});
 						} else if (part.type === 'error') {
+							logger.error(`[provider] part #${partCount} error: ${part.error}`);
 							throw part.error;
+						} else {
+							logger.debug(`[provider] part #${partCount} unknown type: ${(part as any).type}`);
 						}
 					}
+					logger.info(`[provider] stream complete: ${partCount} parts total`);
 
 					// Return the token usage if requested by the model options
 					const tokenUsage = await usage;
