@@ -5,9 +5,11 @@
 
 import * as vscode from 'vscode';
 import { logger } from '../logger';
-import { panelChatPrompts, getWelcomeMessage, buildTitleProviderRequest, buildFollowupProviderRequest, buildRequest } from '../prompts/panel-chat';
-import { usagePreferences } from '../context';
+import { panelChatPrompts, getWelcomeMessage, buildTitleProviderRequest, buildFollowupProviderRequest, buildRequest, getProjectOverviewText } from '../prompts/panel-chat';
+import { usagePreferences, modelConfigs } from '../context';
 import { parseTokenUsage } from '../utilities';
+import { runAgentLoop } from '../agent/loop';
+import { IModelConfig } from '../types';
 
 /**
  * Provides welcome messages and sample questions for the Flexpilot chat panel.
@@ -118,6 +120,16 @@ const followupProvider: vscode.ChatFollowupProvider = {
 /**
  * Handles chat requests by preparing and sending messages to the chat model, and processing the response.
  */
+const getModelConfig = (model: vscode.LanguageModelChat): IModelConfig | undefined => {
+	for (const configId of modelConfigs.list()) {
+		const config = modelConfigs.get<IModelConfig>(configId);
+		if (config && (config.nickname === model.name || config.version === model.version)) {
+			return config;
+		}
+	}
+	return undefined;
+};
+
 const chatRequestHandler: vscode.ChatExtendedRequestHandler = async (request, context, response, token) => {
 	try {
 		// Prepare messages for the chat
@@ -127,18 +139,34 @@ const chatRequestHandler: vscode.ChatExtendedRequestHandler = async (request, co
 		// Check if the user has requested token usage
 		const returnTokenUsage = vscode.workspace.getConfiguration().get<boolean>('zynk.panelChat.showTokenUsage');
 
-		// Generate the chat response
-		const { text } = await request.model.sendRequest(messages, { modelOptions: { returnTokenUsage } }, token);
+		// Determine if this model supports tool calls
+		const config = getModelConfig(request.model);
+		const supportsToolCalls = config?.supportsToolCalls ?? false;
+
 		let responseText: string = '';
-		for await (const chunk of text) {
-			// Check if the chunk is a text part or token usage part
-			const tokenUsage = parseTokenUsage(chunk);
-			if (tokenUsage) {
-				if (returnTokenUsage) { response.warning(tokenUsage); }
-				continue;
+
+		if (supportsToolCalls) {
+			// Agentic loop with tool calling
+			responseText = await runAgentLoop({ messages, model: request.model, response, token, returnTokenUsage });
+		} else {
+			// Fallback: inject workspace overview for non-tool models so they still have context
+			try {
+				const overview = await getProjectOverviewText();
+				messages.splice(1, 0, vscode.LanguageModelChatMessage.User(
+					`Workspace context:\n${overview}`
+				));
+			} catch (e) { /* ignore if no workspace */ }
+
+			const { text } = await request.model.sendRequest(messages, { modelOptions: { returnTokenUsage } }, token);
+			for await (const chunk of text) {
+				const tokenUsage = parseTokenUsage(chunk);
+				if (tokenUsage) {
+					if (returnTokenUsage) { response.warning(tokenUsage); }
+					continue;
+				}
+				response.markdown(chunk);
+				responseText = responseText.concat(chunk);
 			}
-			response.markdown(chunk);
-			responseText = responseText.concat(chunk);
 		}
 
 		// Return the metadata for the response

@@ -11,6 +11,7 @@ import {
 	jsxToMarkdown,
 } from './jsx-utilities';
 import { resolveVariablesToCoreMessages } from '../variables';
+import { getProjectOverview } from '../agent/tools';
 
 /**
  * Generates the welcome message for the user in the chat panel.
@@ -58,7 +59,7 @@ export const buildTitleProviderRequest = (context: vscode.ChatContext) => {
 				<ul>
 					<li>
 						You are an AI programming assistant and a skilled programmer named{' '}
-						<strong>Flexpilot</strong>, who is{' '}
+						<strong>Zynk</strong>, who is{' '}
 						<strong>working inside VS Code IDE</strong> in{' '}
 						<strong>{process.platform}</strong> operating system, assisting a
 						fellow developer in{' '}
@@ -147,7 +148,7 @@ export const buildFollowupProviderRequest = (
 				<ul>
 					<li>
 						You are an AI programming assistant and a skilled programmer named{' '}
-						<strong>Flexpilot</strong>, who is{' '}
+						<strong>Zynk</strong>, who is{' '}
 						<strong>working inside VS Code IDE</strong> in{' '}
 						<strong>{process.platform}</strong> operating system, assisting a
 						fellow developer in <strong>crafting follow-up question</strong> for
@@ -246,7 +247,7 @@ export const buildRequest = async (
 				<ul>
 					<li>
 						You are an AI programming assistant and a skilled programmer named{' '}
-						<strong>Flexpilot</strong>, who is{' '}
+						<strong>Zynk</strong>, who is{' '}
 						<strong>working inside VS Code IDE</strong> in{' '}
 						<strong>{process.platform}</strong> operating system, assisting a
 						fellow developer.
@@ -266,6 +267,11 @@ export const buildRequest = async (
 					<li>
 						The active file or document is the source code the user is looking
 						at right now.
+					</li>
+					<li>
+						You have access to tools that let you explore the workspace:
+						get_project_overview, list_dir, read_file, find_files, grep_search.
+						Always inspect relevant files before answering questions about the codebase.
 					</li>
 				</ul>
 			</Message>
@@ -312,6 +318,10 @@ export const buildRequest = async (
 /**
  * PanelChatPrompt class handles the generation of prompts for panel chat functionality.
  */
+export const getProjectOverviewText = async (): Promise<string> => {
+	return getProjectOverview.invoke({});
+};
+
 export const panelChatPrompts = {
 	/**
 	 * Generates the help text prefix.

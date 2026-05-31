@@ -9,6 +9,7 @@
 			"./node_modules/@types"
 		],
 		"lib": [
+			"ES2020",
 			"WebWorker"
 		],
 		"jsx": "react-jsx",

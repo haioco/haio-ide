@@ -6,7 +6,7 @@
 import * as vscode from 'vscode';
 import { logger } from '../logger';
 import { buildRequest } from '../prompts/terminal-chat';
-import { getGitHubSession, parseTokenUsage } from '../utilities';
+import { parseTokenUsage } from '../utilities';
 
 /**
  * Handles chat requests by preparing and sending messages to the chat model, and processing the response.
@@ -71,13 +71,8 @@ export const register = async () => {
 
 	// Set up requester information
 	chatParticipant.iconPath = new vscode.ThemeIcon('terminal');
-
-	const githubSession = await getGitHubSession();
-	const user = githubSession?.account?.label || 'User';
-	const accountId = githubSession?.account?.id;
 	chatParticipant.requester = {
-		name: user,
-		icon: accountId ? vscode.Uri.parse(`https://avatars.githubusercontent.com/u/${accountId}`) : undefined,
+		name: 'User',
 	};
 	logger.info('Terminal chat participant registered');
 };

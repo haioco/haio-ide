@@ -6,7 +6,7 @@
 import * as vscode from 'vscode';
 import { logger } from '../logger';
 import { buildRequest } from '../prompts/inline-chat';
-import { getEol, getGitHubSession, parseTokenUsage } from '../utilities';
+import { getEol, parseTokenUsage } from '../utilities';
 
 /**
  * Handles chat requests by preparing and sending messages to the chat model, and processing the response.
@@ -140,12 +140,8 @@ export const register = async () => {
 
 	// Set up requester information
 	chatParticipant.iconPath = new vscode.ThemeIcon('copilot');
-	const githubSession = await getGitHubSession();
-	const user = githubSession?.account?.label || 'User';
-	const accountId = githubSession?.account?.id;
 	chatParticipant.requester = {
-		name: user,
-		icon: accountId ? vscode.Uri.parse(`https://avatars.githubusercontent.com/u/${accountId}`) : undefined,
+		name: 'User',
 	};
 	logger.info('Inline chat participant registered');
 };
