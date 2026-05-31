@@ -27,6 +27,13 @@ const flexpilotCopyrightHeaderLines = [
 	' *--------------------------------------------------------------------------------------------*/',
 ];
 
+const zynkCopyrightHeaderLines = [
+	'/*---------------------------------------------------------------------------------------------',
+	' *  Copyright (c) Zynk. All rights reserved.',
+	' *  Licensed under the GPL-3.0 License. See License.txt in the project root for license information.',
+	' *--------------------------------------------------------------------------------------------*/',
+];
+
 
 function hygiene(some, linting = true) {
 	const eslint = require('./gulp-eslint');
@@ -111,7 +118,8 @@ function hygiene(some, linting = true) {
 		for (let i = 0; i < microsoftCopyrightHeaderLines.length; i++) {
 			if (
 				lines[i] !== microsoftCopyrightHeaderLines[i] &&
-				lines[i] !== flexpilotCopyrightHeaderLines[i]
+				lines[i] !== flexpilotCopyrightHeaderLines[i] &&
+				lines[i] !== zynkCopyrightHeaderLines[i]
 			) {
 				console.error(file.relative + ': Missing or bad copyright statement');
 				errorCount++;
