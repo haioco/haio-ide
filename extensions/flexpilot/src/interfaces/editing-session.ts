@@ -7,6 +7,9 @@ import * as vscode from 'vscode';
 import { logger } from '../logger';
 import { getWelcomeMessage, buildRequest } from '../prompts/editing-session';
 import { parseTokenUsage } from '../utilities';
+import { runAgentLoop } from '../agent/loop';
+import { modelConfigs } from '../context';
+import { IModelConfig } from '../types';
 
 /**
  * Provides welcome messages and sample questions for the Flexpilot chat panel.
@@ -24,6 +27,16 @@ const welcomeMessageProvider: vscode.ChatWelcomeMessageProvider = {
 /**
  * Handles chat requests by preparing and sending messages to the chat model, and processing the response.
  */
+const getModelConfig = (model: vscode.LanguageModelChat): IModelConfig | undefined => {
+	for (const configId of modelConfigs.list()) {
+		const config = modelConfigs.get<IModelConfig>(configId);
+		if (config && (config.nickname === model.name || config.version === model.version)) {
+			return config;
+		}
+	}
+	return undefined;
+};
+
 const chatRequestHandler: vscode.ChatExtendedRequestHandler = async (request, context, response, token) => {
 	// TODO: Add prompt variables like #file, #sym, etc.. into the subsequent requests to maintain context
 	try {
@@ -31,87 +44,94 @@ const chatRequestHandler: vscode.ChatExtendedRequestHandler = async (request, co
 		const messages = await buildRequest(response, context, request);
 		logger.debug('Request messages for editing session: \n\n' + JSON.stringify(messages, null, 2));
 
-		// Set the progress message for the response generation
-		response.progress('Generating Edits');
-
 		// Check if the user has requested token usage
-		const returnTokenUsage = vscode.workspace.getConfiguration().get<boolean>('zynk.editingSession.showTokenUsage');
+		const returnTokenUsage = vscode.workspace.getConfiguration().get<boolean>('zynk.editingSession.showTokenUsage') ?? false;
 
-		// Generate the chat response
-		const { text } = await request.model.sendRequest(messages, { modelOptions: { returnTokenUsage } }, token);
+		// Determine if this model supports tool calls
+		const config = getModelConfig(request.model);
+		const supportsToolCalls = config?.supportsToolCalls ?? false;
+
 		let responseText: string = '';
-
-		// Track the files and text edits that have been pushed to the response
-		const markdownPushed: string[] = [];
-		const textEditPushed: string[] = [];
-
-		// Track if atleast one file has been modified
 		let isAtleastOneFileModified = false;
 
-		for await (const chunk of text) {
-			// Check if the chunk is a text part or token usage part
-			const tokenUsage = parseTokenUsage(chunk);
-			if (tokenUsage) {
-				if (returnTokenUsage) { response.warning(tokenUsage); }
-				continue;
+		if (supportsToolCalls) {
+			// Agentic loop: model uses create_file / edit_file tools directly
+			responseText = await runAgentLoop({ messages, model: request.model, response, token, returnTokenUsage });
+			isAtleastOneFileModified = responseText.includes('Created') || responseText.includes('Edited');
+		} else {
+			// Fallback: XML-based file modification streaming
+			response.progress('Generating Edits');
+			const { text } = await request.model.sendRequest(messages, { modelOptions: { returnTokenUsage } }, token);
+
+			// Track the files and text edits that have been pushed to the response
+			const markdownPushed: string[] = [];
+			const textEditPushed: string[] = [];
+
+			for await (const chunk of text) {
+				// Check if the chunk is a text part or token usage part
+				const tokenUsage = parseTokenUsage(chunk);
+				if (tokenUsage) {
+					if (returnTokenUsage) { response.warning(tokenUsage); }
+					continue;
+				}
+
+				// append the text part to the final response text
+				responseText = responseText.concat(chunk);
+
+				// split by <file-modification> so that you dont have to wait for the close tag to stream response.
+				for (const item of responseText.split('<file-modification>')) {
+					const desc = item.match(/<change-description>([^]*?)<\/change-description>/);
+					const file = item.match(/<complete-file-uri>([^]*?)<\/complete-file-uri>/);
+					const code = item.match(/<updated-file-content>([^]*?)<\/updated-file-content>/);
+					const partialCode = item.split('<updated-file-content>')[1] || '';
+
+					// Check if the description and file are present
+					if (!desc?.length || !file?.length) { continue; }
+
+					// Push the markdown and code block parts to the response
+					const fileUri = vscode.Uri.parse(file[1].trim());
+					if (!markdownPushed.includes(fileUri.toString())) {
+						response.markdown(desc[1].trim());
+						response.push(new vscode.ChatResponseMarkdownPart('\n\n```\n'));
+						response.push(new vscode.ChatResponseCodeblockUriPart(fileUri));
+						response.push(new vscode.ChatResponseMarkdownPart('\n```\n\n'));
+						markdownPushed.push(fileUri.toString());
+						vscode.window.showTextDocument(fileUri);
+					}
+
+					// Push the text edit part to the response if the complete code block is present
+					if (code?.length && !textEditPushed.includes(fileUri.toString())) {
+						isAtleastOneFileModified = true;
+						const document = await vscode.workspace.openTextDocument(fileUri);
+						const prefixSpaces = (document.getText().match(/^\s*/) || [''])[0];
+						const suffixSpaces = (document.getText().match(/\s*$/) || [''])[0];
+						const newCode = prefixSpaces + code[1].trim() + suffixSpaces;
+						response.push(
+							new vscode.ChatResponseTextEditPart(
+								fileUri, new vscode.TextEdit(new vscode.Range(0, 0, 10000000, 0), newCode)
+							)
+						);
+						response.push(new vscode.ChatResponseTextEditPart(fileUri, true));
+						textEditPushed.push(fileUri.toString());
+					}
+
+					// Simulate the progress of the response generation streaming
+					else if (!code?.length && partialCode) {
+						const lineNumber = partialCode.trim().split('\n').length;
+						response.push(
+							new vscode.ChatResponseTextEditPart(
+								fileUri,
+								new vscode.TextEdit(new vscode.Range(lineNumber, 0, lineNumber, 0), '')
+							)
+						);
+					}
+				}
 			}
 
-			// append the text part to the final response text
-			responseText = responseText.concat(chunk);
-
-			// split by <file-modification> so that you dont have to wait for the close tag to stream response.
-			for (const item of responseText.split('<file-modification>')) {
-				const desc = item.match(/<change-description>([^]*?)<\/change-description>/);
-				const file = item.match(/<complete-file-uri>([^]*?)<\/complete-file-uri>/);
-				const code = item.match(/<updated-file-content>([^]*?)<\/updated-file-content>/);
-				const partialCode = item.split('<updated-file-content>')[1] || '';
-
-				// Check if the description and file are present
-				if (!desc?.length || !file?.length) { continue; }
-
-				// Push the markdown and code block parts to the response
-				const fileUri = vscode.Uri.parse(file[1].trim());
-				if (!markdownPushed.includes(fileUri.toString())) {
-					response.markdown(desc[1].trim());
-					response.push(new vscode.ChatResponseMarkdownPart('\n\n```\n'));
-					response.push(new vscode.ChatResponseCodeblockUriPart(fileUri));
-					response.push(new vscode.ChatResponseMarkdownPart('\n```\n\n'));
-					markdownPushed.push(fileUri.toString());
-					vscode.window.showTextDocument(fileUri);
-				}
-
-				// Push the text edit part to the response if the complete code block is present
-				if (code?.length && !textEditPushed.includes(fileUri.toString())) {
-					isAtleastOneFileModified = true;
-					const document = await vscode.workspace.openTextDocument(fileUri);
-					const prefixSpaces = (document.getText().match(/^\s*/) || [''])[0];
-					const suffixSpaces = (document.getText().match(/\s*$/) || [''])[0];
-					const newCode = prefixSpaces + code[1].trim() + suffixSpaces;
-					response.push(
-						new vscode.ChatResponseTextEditPart(
-							fileUri, new vscode.TextEdit(new vscode.Range(0, 0, 10000000, 0), newCode)
-						)
-					);
-					response.push(new vscode.ChatResponseTextEditPart(fileUri, true));
-					textEditPushed.push(fileUri.toString());
-				}
-
-				// Simulate the progress of the response generation streaming
-				else if (!code?.length && partialCode) {
-					const lineNumber = partialCode.trim().split('\n').length;
-					response.push(
-						new vscode.ChatResponseTextEditPart(
-							fileUri,
-							new vscode.TextEdit(new vscode.Range(lineNumber, 0, lineNumber, 0), '')
-						)
-					);
-				}
+			// Push the final response text if no files were modified
+			if (!isAtleastOneFileModified) {
+				response.push(new vscode.ChatResponseMarkdownPart(responseText));
 			}
-		}
-
-		// Push the final response text if no files were modified
-		if (!isAtleastOneFileModified) {
-			response.push(new vscode.ChatResponseMarkdownPart(responseText));
 		}
 
 		// Return the metadata for the response

@@ -51,7 +51,7 @@ export const getProjectOverview: ZynkTool = {
 			try {
 				const uri = vscode.Uri.joinPath(root, fname);
 				const data = await vscode.workspace.fs.readFile(uri);
-				const text = Buffer.from(data).toString('utf-8');
+				const text = new TextDecoder().decode(data);
 				const truncated = text.length > 3000 ? text.slice(0, 3000) + '\n... (truncated)' : text;
 				fileContents.push(`--- ${fname} ---\n${truncated}`);
 			} catch { /* ignore missing */ }
@@ -101,7 +101,7 @@ export const readFile: ZynkTool = {
 		const raw = String(args.path);
 		const uri = raw.startsWith('file:') ? vscode.Uri.parse(raw) : vscode.Uri.joinPath(folders[0].uri, raw);
 		const data = await vscode.workspace.fs.readFile(uri);
-		let text = Buffer.from(data).toString('utf-8');
+		let text = new TextDecoder().decode(data);
 		const start = args.start_line ? Number(args.start_line) : undefined;
 		const end = args.end_line ? Number(args.end_line) : undefined;
 		if (start !== undefined || end !== undefined) {
@@ -140,7 +140,7 @@ export const grepSearch: ZynkTool = {
 	invoke: async (args) => {
 		const query = String(args.query);
 		const pattern = args.file_pattern ? String(args.file_pattern) : '{**/*}';
-		const collected: { uri: vscode.Uri; range: vscode.Range; preview: { text: string } }[] = [];
+		const collected: any[] = [];
 		await vscode.workspace.findTextInFiles(
 			{ pattern: query, isRegExp: false },
 			{ include: pattern, exclude: ignoredGlobs.join(','), maxResults: 30 },
@@ -150,7 +150,102 @@ export const grepSearch: ZynkTool = {
 	}
 };
 
-export const allTools: ZynkTool[] = [getProjectOverview, listDir, readFile, findFiles, grepSearch];
+const getWorkspaceRoot = (): vscode.Uri | undefined => {
+	const folders = vscode.workspace.workspaceFolders;
+	return folders && folders.length ? folders[0].uri : undefined;
+};
+
+const resolveUri = (rawPath: string): vscode.Uri => {
+	const root = getWorkspaceRoot();
+	if (rawPath.startsWith('file:')) { return vscode.Uri.parse(rawPath); }
+	if (!root) { throw new Error('No workspace open.'); }
+	return vscode.Uri.joinPath(root, rawPath);
+};
+
+const isInsideWorkspace = (uri: vscode.Uri): boolean => {
+	const root = getWorkspaceRoot();
+	if (!root) { return false; }
+	return uri.fsPath.startsWith(root.fsPath);
+};
+
+export const createFile: ZynkTool = {
+	name: 'create_file',
+	description: 'Create a new file with the given content. Errors if the file already exists.',
+	inputSchema: {
+		type: 'object',
+		properties: {
+			path: { type: 'string', description: 'Relative path from workspace root.' },
+			content: { type: 'string', description: 'Full file content to write.' }
+		},
+		required: ['path', 'content']
+	},
+	invoke: async (args) => {
+		const uri = resolveUri(String(args.path));
+		if (!isInsideWorkspace(uri)) { return 'Error: Cannot write outside the workspace.'; }
+		try {
+			await vscode.workspace.fs.stat(uri);
+			return 'Error: File already exists.';
+		} catch {
+			// file doesn't exist, proceed
+		}
+		const parent = vscode.Uri.joinPath(uri, '..');
+		await vscode.workspace.fs.createDirectory(parent);
+		await vscode.workspace.fs.writeFile(uri, new TextEncoder().encode(String(args.content)));
+		return `Created ${vscode.workspace.asRelativePath(uri)}`;
+	}
+};
+
+export const editFile: ZynkTool = {
+	name: 'edit_file',
+	description: 'Apply an exact-string replacement in an existing file. The old_string must match exactly (including whitespace and newlines).',
+	inputSchema: {
+		type: 'object',
+		properties: {
+			path: { type: 'string', description: 'Relative path from workspace root.' },
+			old_string: { type: 'string', description: 'Exact existing text to replace.' },
+			new_string: { type: 'string', description: 'Replacement text.' }
+		},
+		required: ['path', 'old_string', 'new_string']
+	},
+	invoke: async (args) => {
+		const uri = resolveUri(String(args.path));
+		if (!isInsideWorkspace(uri)) { return 'Error: Cannot write outside the workspace.'; }
+		const data = await vscode.workspace.fs.readFile(uri);
+		let text = new TextDecoder().decode(data);
+		const oldStr = String(args.old_string);
+		const newStr = String(args.new_string);
+		const idx = text.indexOf(oldStr);
+		if (idx === -1) { return 'Error: old_string not found in file. Make sure it matches exactly (including whitespace).'; }
+		if (text.indexOf(oldStr, idx + 1) !== -1) { return 'Error: old_string appears multiple times in the file. Provide more context so it is unique.'; }
+		text = text.slice(0, idx) + newStr + text.slice(idx + oldStr.length);
+		await vscode.workspace.fs.writeFile(uri, new TextEncoder().encode(text));
+		return `Edited ${vscode.workspace.asRelativePath(uri)}`;
+	}
+};
+
+export const runCommand: ZynkTool = {
+	name: 'run_command',
+	description: 'Run a terminal command inside the workspace root. Requires zynk.agent.allowRunCommands to be enabled.',
+	inputSchema: {
+		type: 'object',
+		properties: {
+			command: { type: 'string', description: 'Shell command to run.' }
+		},
+		required: ['command']
+	},
+	invoke: async (args) => {
+		const allowed = vscode.workspace.getConfiguration().get<boolean>('zynk.agent.allowRunCommands');
+		if (!allowed) { return 'Error: Running commands is disabled. Enable zynk.agent.allowRunCommands in settings.'; }
+		const root = getWorkspaceRoot();
+		if (!root) { return 'Error: No workspace open.'; }
+		const term = vscode.window.createTerminal({ cwd: root.fsPath, name: 'Zynk Agent' });
+		term.sendText(String(args.command));
+		term.show();
+		return `Running command in terminal: ${String(args.command)}`;
+	}
+};
+
+export const allTools: ZynkTool[] = [getProjectOverview, listDir, readFile, findFiles, grepSearch, createFile, editFile, runCommand];
 
 export const getToolSchemas = (): vscode.LanguageModelChatTool[] => {
 	return allTools.map(t => ({

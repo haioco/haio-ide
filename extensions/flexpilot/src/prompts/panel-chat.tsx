@@ -269,9 +269,11 @@ export const buildRequest = async (
 						at right now.
 					</li>
 					<li>
-						You have access to tools that let you explore the workspace:
-						get_project_overview, list_dir, read_file, find_files, grep_search.
+						You have access to tools that let you explore and modify the workspace:
+						get_project_overview, list_dir, read_file, find_files, grep_search,
+						create_file, edit_file, run_command.
 						Always inspect relevant files before answering questions about the codebase.
+						When editing, make sure old_string matches exactly (including whitespace).
 					</li>
 				</ul>
 			</Message>
