@@ -1,9 +1,9 @@
 {
-  "name": "flexpilot-dev",
+  "name": "zynk-dev",
   "version": "1.97.0",
   "distro": "c883c91dadf5f063b26c86ffe01851acee3747c6",
   "author": {
-    "name": "Flexpilot AI"
+    "name": "Zynk"
   },
   "license": "MIT",
   "main": "./out/main.js",
